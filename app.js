@@ -26,11 +26,9 @@ app.use(bodyParser.json());
 app.use(cors());
 
 app.use((req, res, next) => {
-  res.set('Cache-Control', 'no-cache');
+    res.set('Cache-Control', 'no-cache');
   res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.set('Strict-Transport-Security', 'max-age=200'); 
-  res.set('X-Content-Type-Options', 'nosniff');
-  res.set('X-Frame-Options', 'deny');
   res.set('X-Powered-By', '');
   res.set('X-XSS-Protection', '1; mode=block');
   next();
@@ -118,17 +116,12 @@ app.get('/', async (req, res) => {
 
 // Method return log queue.
 app.get("/queue", async function (req, res) {
-    if(req.headers['user-agent']  && req.headers['user-agent'].includes(whitelistUserAgent)){
-        const { cmsConnectionId, channelId } = req.query;
-        if (process.env.SF_CMS_CONNECTION_ID === cmsConnectionId) {
-            res.sendFile('./queue.html', { root: __dirname });
-        } else {
-            res.send('Required fields not found.');
-        }
-    }else{
-        res.send('Invalid request.');
+    const { cmsConnectionId, channelId } = req.query;
+    if (process.env.SF_CMS_CONNECTION_ID === cmsConnectionId) {
+        res.sendFile('./queue.html', { root: __dirname });
+    } else {
+        res.send('Required fields not found.');
     }
-
 });
 
 /**
