@@ -1,7 +1,7 @@
 {
-    "name": "CMS SFMC Connector",
-    "repository": "https://github.com/vinaybothra/salesforcecms",
-    "description": "The quickest and easiest way to move CMS content to Marketing Cloud",
+    "name": "CMS SFMC Sync",
+    "repository": "https://github.com/horizontalintegration/CMS-SFMC-Sync",
+    "description": "The quickest and easiest way to move SF CMS content to Marketing Cloud",
     "logo": "https://cdn.rawgit.com/heroku/node-js-getting-started/main/public/node.svg",
     "image": "heroku/nodejs",
     "env": {

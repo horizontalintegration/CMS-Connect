@@ -1,4 +1,4 @@
-CMS SFMC Connector
+CMS SFMC Sync
 ----------------
 
 1. Deploying to Heroku?
