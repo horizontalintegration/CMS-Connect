@@ -27,11 +27,11 @@ app.use(cors());
 
 app.use((req, res, next) => {
     res.set('Cache-Control', 'no-cache');
-  res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.set('Strict-Transport-Security', 'max-age=200'); 
-  res.set('X-Powered-By', '');
-  res.set('X-XSS-Protection', '1; mode=block');
-  next();
+    res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.set('Strict-Transport-Security', 'max-age=200');
+    res.set('X-Powered-By', '');
+    res.set('X-XSS-Protection', '1; mode=block');
+    next();
 });
 
 const whitelistUserAgent = 'SFDC';
@@ -39,24 +39,24 @@ const whitelistUserAgent = 'SFDC';
 
 // Method is use to upload conent from salesforce cms to mrketing cloud.
 app.post('/uploadCMSContent', cors(), async (req, res, next) => {
-    
-    if(req.headers['user-agent']  && req.headers['user-agent'].includes(whitelistUserAgent)){
+
+    if (req.headers['user-agent'] && req.headers['user-agent'].includes(whitelistUserAgent)) {
         try {
             isLocal = req.hostname.indexOf("localhost") == 0;
             if (req.hostname.indexOf(".herokuapp.com") > 0) {
                 herokuApp = req.hostname.replace(".herokuapp.com", "");
             }
-    
+
             let { contentTypeNodes, channelId, channelName, mcFolderId, source } = req.body;
-    
+
             if (!contentTypeNodes || !channelId || !channelName || !source) {
                 res.send('Required fields not found.');
             }
-    
+
             if (isSetup()) {
-    
+
                 mcFolderId = await checkFolderId(mcFolderId);
-    
+
                 if (mcFolderId) {
                     contentTypeNodes = JSON.parse(contentTypeNodes);
                     try {
@@ -70,15 +70,15 @@ app.post('/uploadCMSContent', cors(), async (req, res, next) => {
                             environment: process.env.SF_ENVIRONMENT,
                             autoRefresh: true
                         });
-    
+
                         const resp = await org.authenticate({
                             username: process.env.SF_USERNAME,
                             password: process.env.SF_PASSWORD,
                             securityToken: process.env.SF_SECURITY_TOKEN
                         });
-    
+
                         console.log("Salesforce authentication :", resp.access_token ? 'Successful' : 'Failure');
-    
+
                         if (resp.access_token) {
                             run(resp, org, contentTypeNodes, channelId, channelName, mcFolderId, source);
                             res.send('CMS Content Type is syncing in the background. Please wait..');
@@ -92,16 +92,16 @@ app.post('/uploadCMSContent', cors(), async (req, res, next) => {
                     updateSfRecord(null, null, MC_AUTH_FAILED_MSG);
                     res.send(MC_AUTH_FAILED_MSG);
                 }
-    
+
             } else {
                 res.send('Required environment variables not found.');
             }
         } catch (error) {
             res.send(error.message);
         }
-    }else{
+    } else {
         res.send('Invalid request.');
-    }    
+    }
 });
 
 // Kick off a new job by adding it to the work queue
@@ -111,7 +111,7 @@ app.get('/jobs', async (req, res) => {
 
 // Kick off a new job by adding it to the work queue
 app.get('/', async (req, res) => {
-    res.send('Welcome to CMS SFMC Sync Heroku App.');
+    res.send('Welcome to CMS Connect Heroku App.');
 });
 
 // Method return log queue.
@@ -193,7 +193,7 @@ async function getFolderId(folderId) {
 
 async function getFolderIdFromServer() {
     try {
-        const folderName = process.env.MC_FOLDER_NAME || 'CMS SFMC Sync Folder'; // Env folder name
+        const folderName = process.env.MC_FOLDER_NAME || 'CMS Connect Folder'; // Env folder name
         const mcAuthResults = await getMcAuth();
         if (mcAuthResults && mcAuthResults.access_token) {
             const mcFolders = await getMcFolders(mcAuthResults.access_token); // Getting all folders

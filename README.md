@@ -1,15 +1,15 @@
-# CMS SFMC Sync
+# CMS Connect
 
-The CMS SFMC Sync gives you a convenient point-and-click way to move cms content types to Marketing Cloud.
+The CMS Connect gives you a convenient point-and-click way to move cms content types to Marketing Cloud.
 
 Read [this](https://docs.google.com/presentation/d/1GdpW7RTiCU-lTvp-bhaChILnzGOk4yhpeX11k5FUKT4/edit?usp=sharing) to learn more about the application.
 ----------------
 
 Follow the instructions below to deploy your own instance of the application:
 
-## 1. Install and Configure the CMS SFMC Sync Salesforce App
+## 1. Install and Configure the CMS Connect Salesforce App
 
-1. Install the CMS SFMC Sync Salesforce application first. See instructions here: <a href="https://github.com/horizontalintegration/CMS-SFMC-Sync-SF">https://github.com/horizontalintegration/CMS-SFMC-Sync-SF</a>
+1. Install the CMS Connect Salesforce application first. See instructions here: <a href="https://github.com/horizontalintegration/CMS-Connect-SF">https://github.com/horizontalintegration/CMS-Connect-SF</a>
 
 1. In **Setup > Users**, create an integration user that you will use to connect to Salesforce from the Node.js app. Select **Salesforce** as the license type and **System Administrator** as the profile. 
 
@@ -24,9 +24,9 @@ Follow the instructions below to deploy your own instance of the application:
     - Add **Full access (full)** **Perform requests on your behalf at any time (refresh_token, offline_access)** to the **Selected OAuth Scopes**
     - Click **Save** and click **Continue**
 
-## 2. Install the CMS SFMC Sync Node App
+## 2. Install the CMS Connect Node App
 
-### Option 1: Install the CMS SFMC Sync Node App using the Heroku button
+### Option 1: Install the CMS Connect Node App using the Heroku button
 
 1. Make sure you are logged in to the Heroku Dashboard
 1. Click the button below to deploy the manufacturing app on Heroku:
@@ -37,14 +37,14 @@ Follow the instructions below to deploy your own instance of the application:
 1. Setup an OAuth Connected App in Salesforce and an Installed Package in Marketing Cloud to enter all the environment variables in the deployment wizard.
 1. Click the **Deploy** button
 
-### Option 2: Install the CMS SFMC Sync Node App locally
+### Option 2: Install the CMS Connect Node App locally
 
 Make sure you have [Node.js](http://nodejs.org/) and the [Heroku CLI](https://cli.heroku.com/) installed.
 
 1. Clone this repository:
     ```
-    git clone https://github.com/horizontalintegration/CMS-SFMC-Sync
-    cd CMS-SFMC-Sync
+    git clone https://github.com/horizontalintegration/CMS-Connect
+    cd CMS-Connect
     ```
 
 1. Run the commands in the console

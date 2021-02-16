@@ -1,5 +1,5 @@
 {
-  "name": "cms-sfmc-sync",
+  "name": "CMS-Connect",
   "version": "0.0.1",
   "description": "The quickest and easiest way to move CMS content to Marketing Cloud",
   "engines": {
@@ -28,7 +28,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/horizontalintegration/CMS-SFMC-Sync/blob/master"
+    "url": "https://github.com/horizontalintegration/CMS-Connect/blob/master"
   },
   "keywords": [
     "node",
