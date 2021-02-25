@@ -45,7 +45,7 @@ app.use(express.static(__dirname + '/public'));
 app.disable('x-powered-by');
 app.use(helmet.hidePoweredBy());
 
-/*app.use((req, res, next) => {
+app.use((req, res, next) => {
     res.set('Cache-Control','public', 'no-cache, no-store, must-revalidate');
     res.set('Pragma', 'no-cache');
     res.set('Expires', '0');
@@ -61,18 +61,6 @@ app.use(helmet.hidePoweredBy());
     res.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     res.set('Access-Control-Allow-Credentials', 'true');
     next();
-});*/
-
-app.use((req, res, next) => {
-  res.set('Cache-Control','public', 'no-cache, no-store, must-revalidate');
-  res.set('Pragma', 'no-cache');
-  res.set('Expires', '0');
-  res.set( 'x-powered-by', false );
-  res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.set('Strict-Transport-Security', 'max-age=200');
-  res.set('X-Powered-By', '');
-  res.set('X-XSS-Protection', '1; mode=block');
-  next();
 });
 
 // Kick off a new job by adding it to the work queue
@@ -89,11 +77,11 @@ app.get('/jobs', async (req, res) => {
 // Method return log queue.
 app.get("/queue", async function (req, res) {
   const { cmsConnectionId, channelId } = req.query;
-  if (process.env.SF_CMS_CONNECTION_ID === cmsConnectionId) {
+  //if (process.env.SF_CMS_CONNECTION_ID === cmsConnectionId) {
       res.sendFile('./queue.html', { root: __dirname });
-  } else {
+  /*} else {
       res.send('Required fields not found.');
-  }
+  }*/
 
 });
 
