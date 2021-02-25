@@ -37,9 +37,12 @@ const ALLOWED_CSS = 'https://www.herokucdn.com/purple3/latest/purple3.min.css'
 
 let app = express();
 app.enable('trust proxy');
-app.use(express.static(__dirname + "/public"));
+app.set('view engine', 'ejs');
 app.use(bodyParser.json());
-app.use(cors());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors(corsOptions));
+app.use(express.static(__dirname + '/public'));
+app.disable('x-powered-by');
 
 app.use((req, res, next) => {
     res.set('Cache-Control', 'no-cache');
