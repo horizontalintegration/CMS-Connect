@@ -45,31 +45,24 @@ app.use(express.static(__dirname + '/public'));
 app.disable('x-powered-by');
 app.use(helmet.hidePoweredBy());
 
-
-
 app.use((req, res, next) => {
-  res.set('Cache-Control','public', 'no-cache, no-store, must-revalidate');
-  res.set('Pragma', 'no-cache');
-  res.set('Expires', '0');
-  res.set( 'x-powered-by', false );
-  res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.set('Strict-Transport-Security', 'max-age=200');
-
-  res.set('Content-Security-Policy',   `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.google-analytics.com *.googletagmanager.com tagmanager.google.com; object-src 'none'; style-src 'self' data: * ${ALLOWED_CSS}; 'unsafe-inline' *.typekit.net tagmanager.google.com fonts.googleapis.com; img-src 'self' data: *.google-analytics.com *.googletagmanager.com *.sfmc-content.com ssl.gstatic.com www.gstatic.com; frame-ancestors 'none'; frame-src 'none'; font-src 'self' data: *.typekit.net fonts.gstatic.com; connect-src 'self' *.google-analytics.com *.g.doubleclick.net;`);
-  res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.set('X-Content-Security-Policy', `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.google-analytics.com *.googletagmanager.com tagmanager.google.com; object-src 'none'; style-src 'self' data: * ${ALLOWED_CSS}; 'unsafe-inline' *.typekit.net tagmanager.google.com fonts.googleapis.com; img-src 'self' data: *.google-analytics.com *.googletagmanager.com *.sfmc-content.com ssl.gstatic.com www.gstatic.com ${ALLOWED_CSS}; frame-ancestors 'none'; frame-src 'none'; font-src 'self' data: *.typekit.net fonts.gstatic.com; connect-src 'self' *.google-analytics.com *.g.doubleclick.net;`);
-  res.set('X-WebKit-CSP', `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.google-analytics.com *.googletagmanager.com tagmanager.google.com; object-src 'none'; style-src 'self'  data: * ${ALLOWED_CSS}; 'unsafe-inline' *.typekit.net tagmanager.google.com fonts.googleapis.com; img-src 'self' data: *.google-analytics.com *.googletagmanager.com *.sfmc-content.com ssl.gstatic.com www.gstatic.com ${ALLOWED_CSS}; frame-ancestors 'none'; frame-src 'none'; font-src 'self' data: *.typekit.net fonts.gstatic.com; connect-src 'self' *.google-analytics.com *.g.doubleclick.net;`);
-
-  res.set('X-Powered-By', '');
-  res.set('X-XSS-Protection', '1; mode=block');
-  res.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.set('Access-Control-Allow-Credentials', 'true');
-  next();
+    res.set('Cache-Control','public', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set( 'x-powered-by', false );
+    res.set('Content-Security-Policy',   `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.google-analytics.com *.googletagmanager.com tagmanager.google.com; object-src 'none'; style-src 'self' data: * ${ALLOWED_CSS}; 'unsafe-inline' *.typekit.net tagmanager.google.com fonts.googleapis.com; img-src 'self' data: *.google-analytics.com *.googletagmanager.com *.sfmc-content.com ssl.gstatic.com www.gstatic.com; frame-ancestors 'none'; frame-src 'none'; font-src 'self' data: *.typekit.net fonts.gstatic.com; connect-src 'self' *.google-analytics.com *.g.doubleclick.net;`);
+    res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.set('X-Content-Security-Policy', `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.google-analytics.com *.googletagmanager.com tagmanager.google.com; object-src 'none'; style-src 'self' data: * ${ALLOWED_CSS}; 'unsafe-inline' *.typekit.net tagmanager.google.com fonts.googleapis.com; img-src 'self' data: *.google-analytics.com *.googletagmanager.com *.sfmc-content.com ssl.gstatic.com www.gstatic.com ${ALLOWED_CSS}; frame-ancestors 'none'; frame-src 'none'; font-src 'self' data: *.typekit.net fonts.gstatic.com; connect-src 'self' *.google-analytics.com *.g.doubleclick.net;`);
+    res.set('Strict-Transport-Security', 'max-age=200');
+    res.set('X-WebKit-CSP', `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.google-analytics.com *.googletagmanager.com tagmanager.google.com; object-src 'none'; style-src 'self'  data: * ${ALLOWED_CSS}; 'unsafe-inline' *.typekit.net tagmanager.google.com fonts.googleapis.com; img-src 'self' data: *.google-analytics.com *.googletagmanager.com *.sfmc-content.com ssl.gstatic.com www.gstatic.com ${ALLOWED_CSS}; frame-ancestors 'none'; frame-src 'none'; font-src 'self' data: *.typekit.net fonts.gstatic.com; connect-src 'self' *.google-analytics.com *.g.doubleclick.net;`);
+    res.set('X-Powered-By', '');
+    res.set('X-XSS-Protection', '1; mode=block');
+    res.set('X-Content-Type-Options', 'nosniff');
+    res.set('X-Frame-Options', 'deny');
+    res.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.set('Access-Control-Allow-Credentials', 'true');
+    next();
 });
-
-
-
-
 
 // Kick off a new job by adding it to the work queue
 app.get('/', async (req, res) => {
