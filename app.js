@@ -45,9 +45,7 @@ app.use(express.static(__dirname + '/public'));
 app.disable('x-powered-by');
 
 app.use((req, res, next) => {
-    res.set('Cache-Control','public', 'no-cache, no-store, must-revalidate');
-    res.set('Pragma', 'no-cache');
-    res.set('Expires', '0');
+    res.set('Cache-Control', 'no-cache');
     res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.set('Strict-Transport-Security', 'max-age=200');
     res.set('X-Powered-By', '');
