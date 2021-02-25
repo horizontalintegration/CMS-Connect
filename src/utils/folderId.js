@@ -1,6 +1,8 @@
 const { getMcFolders, createMcFolder, getMcAuth } = require('../mcUtils.js');
 const fetch = require('node-fetch');
 
+const { validateUrl } = require('./utils.js');
+
 const { MC_FOLDER_NAME, MC_REST_BASE_URI } = process.env;
 const {
     MC_CONTENT_CATEGORIES_API_PATH,
@@ -15,9 +17,7 @@ const {
  async function getIdFromServer() {
     try {
         const folderName = MC_FOLDER_NAME || 'CMS Connect Folder'; // Env folder name
-        console.log('folderName', folderName);
         const mcAuthResults = await getMcAuth();
-        console.log('mcAuthResults', mcAuthResults);
         if (mcAuthResults && mcAuthResults.access_token) {
             const mcFolders = await getMcFolders(mcAuthResults.access_token); // Getting all folders
 

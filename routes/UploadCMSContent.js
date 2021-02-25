@@ -1,18 +1,18 @@
 const nforce = require("nforce");
 
-const { run } = require('../mcUtils.js');
-const { updateSfRecord, isSetup, oauthCallbackUrl } = require('../utils/utils');
-const { getFolderIdFromServer, getFolderId } = require('../utils/folderId');
+const { run } = require('../src/mcUtils.js');
+const { updateSfRecord, isSetup, oauthCallbackUrl } = require('../src/utils/utils');
+const { getFolderIdFromServer, getFolderId } = require('../src/utils/folderId');
 
 const { CONSUMER_KEY, CONSUMER_SECRET, SF_API_VERSION, SF_ENVIRONMENT, SF_USERNAME, SF_PASSWORD, SF_SECURITY_TOKEN } = process.env;
 
-const { MC_AUTH_FAILED_MSG, SF_AUTH_FAILED_MSG } = require('../constants');
+const { MC_AUTH_FAILED_MSG, SF_AUTH_FAILED_MSG } = require('../src/constants');
 
 const whitelistUserAgent = 'SFDC';
 
 module.exports = (app) => {
     app.post('/uploadCMSContent', async (req, res, next) => {
-
+        
         if (req.headers['user-agent'] && req.headers['user-agent'].includes(whitelistUserAgent)) {
             try {
                 isLocal = req.hostname.indexOf("localhost") == 0;
@@ -25,11 +25,9 @@ module.exports = (app) => {
                 if (!contentTypeNodes || !channelId || !channelName || !source) {
                     res.send('Required fields not found.');
                 }
-    
+                console.log('mcFolderId', isLocal);
                 if (isSetup()) {
-    
                     mcFolderId = await checkFolderId(mcFolderId);
-    
                     if (mcFolderId) {
                         contentTypeNodes = JSON.parse(contentTypeNodes);
                         try {

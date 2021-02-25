@@ -33,50 +33,37 @@ const corsOptions = {
  * CONFIGURE EXPRESS SERVER
  */
 
+const ALLOWED_CSS = 'https://www.herokucdn.com/purple3/latest/purple3.min.css'
+
 let app = express();
 app.enable('trust proxy');
 app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors(corsOptions));
-app.use(express.static(__dirname + '/client/build'));
+app.use(express.static(__dirname + '/public'));
 app.disable('x-powered-by');
-app.use(helmet.hidePoweredBy())
-app.use((req, res, next) => {
-  res.set('Cache-Control','public', 'no-cache, no-store, must-revalidate');
-  res.set('Pragma', 'no-cache');
-  res.set('Expires', '0');
-  res.set( 'x-powered-by', false );
-  res.set('Content-Security-Policy',   `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.google-analytics.com *.googletagmanager.com tagmanager.google.com; object-src 'none'; style-src 'self' 'unsafe-inline' *.typekit.net tagmanager.google.com fonts.googleapis.com; img-src 'self' data: *.google-analytics.com *.googletagmanager.com *.sfmc-content.com ssl.gstatic.com www.gstatic.com ${IMAGE_CDN}; frame-ancestors 'none'; frame-src 'none'; font-src 'self' data: *.typekit.net fonts.gstatic.com; connect-src 'self' *.google-analytics.com *.g.doubleclick.net;`);
-  res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.set('Strict-Transport-Security', 'max-age=200'); 
-  res.set('X-Content-Security-Policy', `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.google-analytics.com *.googletagmanager.com tagmanager.google.com; object-src 'none'; style-src 'self' 'unsafe-inline' *.typekit.net tagmanager.google.com fonts.googleapis.com; img-src 'self' data: *.google-analytics.com *.googletagmanager.com *.sfmc-content.com ssl.gstatic.com www.gstatic.com ${IMAGE_CDN}; frame-ancestors 'none'; frame-src 'none'; font-src 'self' data: *.typekit.net fonts.gstatic.com; connect-src 'self' *.google-analytics.com *.g.doubleclick.net;`);
-  res.set('X-Content-Type-Options', 'nosniff');
-  res.set('X-Frame-Options', 'deny');
-  res.set('X-WebKit-CSP', `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.google-analytics.com *.googletagmanager.com tagmanager.google.com; object-src 'none'; style-src 'self' 'unsafe-inline' *.typekit.net tagmanager.google.com fonts.googleapis.com; img-src 'self' data: *.google-analytics.com *.googletagmanager.com *.sfmc-content.com ssl.gstatic.com www.gstatic.com ${IMAGE_CDN}; frame-ancestors 'none'; frame-src 'none'; font-src 'self' data: *.typekit.net fonts.gstatic.com; connect-src 'self' *.google-analytics.com *.g.doubleclick.net;`);
-  res.set('X-XSS-Protection', '1; mode=block');
-  res.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.set('Access-Control-Allow-Credentials', 'true');
-  next();
-});
-
-
-
-/*let app = express();
-app.enable('trust proxy');
-app.use(express.static(__dirname + "/public"));
-app.use(bodyParser.json());
-app.use(cors());
+app.use(helmet.hidePoweredBy());
 
 app.use((req, res, next) => {
-    res.set('Cache-Control', 'no-cache');
+    res.set('Cache-Control','public', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set( 'x-powered-by', false );
+    res.set('Content-Security-Policy',   `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.google-analytics.com *.googletagmanager.com tagmanager.google.com; object-src 'none'; style-src 'self' data: * ${ALLOWED_CSS}; 'unsafe-inline' *.typekit.net tagmanager.google.com fonts.googleapis.com; img-src 'self' data: *.google-analytics.com *.googletagmanager.com *.sfmc-content.com ssl.gstatic.com www.gstatic.com; frame-ancestors 'none'; frame-src 'none'; font-src 'self' data: *.typekit.net fonts.gstatic.com; connect-src 'self' *.google-analytics.com *.g.doubleclick.net;`);
     res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.set('X-Content-Security-Policy', `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.google-analytics.com *.googletagmanager.com tagmanager.google.com; object-src 'none'; style-src 'self' data: * ${ALLOWED_CSS}; 'unsafe-inline' *.typekit.net tagmanager.google.com fonts.googleapis.com; img-src 'self' data: *.google-analytics.com *.googletagmanager.com *.sfmc-content.com ssl.gstatic.com www.gstatic.com ${ALLOWED_CSS}; frame-ancestors 'none'; frame-src 'none'; font-src 'self' data: *.typekit.net fonts.gstatic.com; connect-src 'self' *.google-analytics.com *.g.doubleclick.net;`);
     res.set('Strict-Transport-Security', 'max-age=200');
+    res.set('X-WebKit-CSP', `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.google-analytics.com *.googletagmanager.com tagmanager.google.com; object-src 'none'; style-src 'self'  data: * ${ALLOWED_CSS}; 'unsafe-inline' *.typekit.net tagmanager.google.com fonts.googleapis.com; img-src 'self' data: *.google-analytics.com *.googletagmanager.com *.sfmc-content.com ssl.gstatic.com www.gstatic.com ${ALLOWED_CSS}; frame-ancestors 'none'; frame-src 'none'; font-src 'self' data: *.typekit.net fonts.gstatic.com; connect-src 'self' *.google-analytics.com *.g.doubleclick.net;`);
     res.set('X-Powered-By', '');
     res.set('X-XSS-Protection', '1; mode=block');
+    res.set('X-Content-Type-Options', 'nosniff');
+    res.set('X-Frame-Options', 'deny');
+    res.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.set('Access-Control-Allow-Credentials', 'true');
     next();
 });
-*/
+
 
 
 
@@ -85,9 +72,25 @@ app.get('/', async (req, res) => {
     res.send('Welcome to CMS Connect Heroku App.');
 });
 
-require('./src/routes/UploadCMSContent')(app);
-require('./src/routes/Jobs')(app);
-require('./src/routes/Queue')(app);
+// Kick off a new job by adding it to the work queue
+app.get('/jobs', async (req, res) => {
+  res.json({ jobs: jobs() });
+});
+
+
+// Method return log queue.
+app.get("/queue", async function (req, res) {
+  const { cmsConnectionId, channelId } = req.query;
+  if (process.env.SF_CMS_CONNECTION_ID === cmsConnectionId) {
+      res.sendFile('./queue.html', { root: __dirname });
+  } else {
+      res.send('Required fields not found.');
+  }
+
+});
+
+require('./routes/UploadCMSContent')(app);
+
 
 // Initialize the app.
 app.listen(process.env.PORT || 3000, async function () {
