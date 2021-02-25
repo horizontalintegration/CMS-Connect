@@ -37,13 +37,17 @@ const ALLOWED_CSS = 'https://www.herokucdn.com/purple3/latest/purple3.min.css'
 
 let app = express();
 app.enable('trust proxy');
-app.use(express.static(__dirname + "/public"));
+app.set('view engine', 'ejs');
 app.use(bodyParser.json());
-app.use(cors());
-
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors(corsOptions));
+app.use(express.static(__dirname + '/public'));
+app.disable('x-powered-by');
 
 app.use((req, res, next) => {
-    res.set('Cache-Control', 'no-cache');
+  res.set('Cache-Control','public', 'no-cache, no-store, must-revalidate');
+  res.set('Pragma', 'no-cache');
+  res.set('Expires', '0');
     res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.set('Strict-Transport-Security', 'max-age=200');
     res.set('X-Powered-By', '');
