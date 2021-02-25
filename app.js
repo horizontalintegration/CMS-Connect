@@ -37,12 +37,10 @@ const ALLOWED_CSS = 'https://www.herokucdn.com/purple3/latest/purple3.min.css'
 
 let app = express();
 app.enable('trust proxy');
-app.set('view engine', 'ejs');
+app.use(express.static(__dirname + "/public"));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors(corsOptions));
-app.use(express.static(__dirname + '/public'));
-app.disable('x-powered-by');
+app.use(cors());
+
 
 app.use((req, res, next) => {
     res.set('Cache-Control', 'no-cache');
@@ -50,9 +48,6 @@ app.use((req, res, next) => {
     res.set('Strict-Transport-Security', 'max-age=200');
     res.set('X-Powered-By', '');
     res.set('X-XSS-Protection', '1; mode=block');
-    res.set('Content-Security-Policy',   `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.google-analytics.com *.googletagmanager.com tagmanager.google.com; object-src 'none'; style-src 'self' data: * ${ALLOWED_CSS}; 'unsafe-inline' *.typekit.net tagmanager.google.com fonts.googleapis.com; img-src 'self' data: *.google-analytics.com *.googletagmanager.com *.sfmc-content.com ssl.gstatic.com www.gstatic.com; frame-ancestors 'none'; frame-src 'none'; font-src 'self' data: *.typekit.net fonts.gstatic.com; connect-src 'self' *.google-analytics.com *.g.doubleclick.net;`);
-    res.set('X-Content-Security-Policy', `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.google-analytics.com *.googletagmanager.com tagmanager.google.com; object-src 'none'; style-src 'self' data: * ${ALLOWED_CSS}; 'unsafe-inline' *.typekit.net tagmanager.google.com fonts.googleapis.com; img-src 'self' data: *.google-analytics.com *.googletagmanager.com *.sfmc-content.com ssl.gstatic.com www.gstatic.com ${ALLOWED_CSS}; frame-ancestors 'none'; frame-src 'none'; font-src 'self' data: *.typekit.net fonts.gstatic.com; connect-src 'self' *.google-analytics.com *.g.doubleclick.net;`);
-    res.set('X-WebKit-CSP', `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.google-analytics.com *.googletagmanager.com tagmanager.google.com; object-src 'none'; style-src 'self'  data: * ${ALLOWED_CSS}; 'unsafe-inline' *.typekit.net tagmanager.google.com fonts.googleapis.com; img-src 'self' data: *.google-analytics.com *.googletagmanager.com *.sfmc-content.com ssl.gstatic.com www.gstatic.com ${ALLOWED_CSS}; frame-ancestors 'none'; frame-src 'none'; font-src 'self' data: *.typekit.net fonts.gstatic.com; connect-src 'self' *.google-analytics.com *.g.doubleclick.net;`);
     next();
 });
 
