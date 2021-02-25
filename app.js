@@ -37,13 +37,27 @@ const ALLOWED_CSS = 'https://www.herokucdn.com/purple3/latest/purple3.min.css'
 
 let app = express();
 app.enable('trust proxy');
+app.use(express.static(__dirname + "/public"));
+app.use(bodyParser.json());
+app.use(cors());
+
+app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-cache');
+    res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.set('Strict-Transport-Security', 'max-age=200');
+    res.set('X-Powered-By', '');
+    res.set('X-XSS-Protection', '1; mode=block');
+    next();
+});
+
+/*
+app.enable('trust proxy');
 app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors(corsOptions));
 app.use(express.static(__dirname + '/public'));
 app.disable('x-powered-by');
-
 
 app.use((req, res, next) => {
     res.set('Cache-Control','public', 'no-cache, no-store, must-revalidate');
@@ -61,7 +75,7 @@ app.use((req, res, next) => {
     res.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
     res.set('Access-Control-Allow-Credentials', 'true');
     next();
-});
+});*/
 
 // Kick off a new job by adding it to the work queue
 app.get('/', async (req, res) => {
@@ -77,6 +91,7 @@ app.get('/jobs', async (req, res) => {
 // Method return log queue.
 app.get("/queue", async function (req, res) {
   const { cmsConnectionId, channelId } = req.query;
+  console.log('cmsConnectionId-->', cmsConnectionId)
   if (process.env.SF_CMS_CONNECTION_ID === cmsConnectionId) {
       res.sendFile('./queue.html', { root: __dirname });
   } else {
