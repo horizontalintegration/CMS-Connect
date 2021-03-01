@@ -11,9 +11,9 @@ const { getFolderIdFromServer } = require('./src/utils/folderId');
 
 const helmet = require("helmet");
 
-const { ENV_URL, IMAGE_CDN } = process.env;
+const { APP_NAME, IMAGE_CDN } = process.env;
 
-const corsDomains = ENV_URL.split(',');
+const corsDomains = APP_NAME ? `https://${APP_NAME}.herokuapp.com`.split(',') : [];
 const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests).
