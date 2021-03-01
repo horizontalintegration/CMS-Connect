@@ -13,7 +13,9 @@ const helmet = require("helmet");
 
 const { APP_NAME, IMAGE_CDN } = process.env;
 
-const corsDomains = APP_NAME ? `https://${APP_NAME}.herokuapp.com`.split(',') : [];
+const ENV_URL = APP_NAME ? `https://${APP_NAME}.herokuapp.com` : '';
+
+const corsDomains = ENV_URL ? ENV_URL.split(',') : [];
 const corsOptions = {
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests).
