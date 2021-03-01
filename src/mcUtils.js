@@ -33,8 +33,8 @@ const getMcAuthBody = {
 
 //Method is use to call api for next available batch 
 async function callNextBatchService(accessToken) {
-    console.log('Failed Items --->', failedItemsCount);
-    console.log('Skipped Items --->', skippedItemsCount);
+    console.log('Failed Items:', failedItemsCount);
+    console.log('Skipped Items:', skippedItemsCount);
     try {
         const body = { cmsConnectionId: SF_CMS_CONNECTION_ID }
 
@@ -108,7 +108,7 @@ async function checkFileInMc(folderId, fileName) {
     })
         .then(res => res.json())
         .catch((err) => {
-            console.log(err);
+            console.log('Error:', err);
         });
 }
 
@@ -125,7 +125,6 @@ async function getPresentMCAssets(folderId) {
         {
             "pageSize": 7500 //fixed
         },
-
         "query":
         {
             "leftOperand":
@@ -159,7 +158,7 @@ async function getPresentMCAssets(folderId) {
     })
         .then(res => res.json())
         .catch((err) => {
-            console.log(err);
+            console.log('Error:', err);
         });
 }
 
@@ -192,13 +191,11 @@ async function getMcAuth() {
     })
         .then(res => res.json())
         .catch((err) => {
-            console.log(err)
+            console.log('Error:', err)
         });
 }
 
 // Move content to marketing cloud
-
-
 // Method is use for move rich text, html content and normal text.
 async function moveTextToMC(name, value, assetTypeId, folderId, mcAuthResults, jobId, referenceId, org) {
     name = `${ASSETNAME_PREFIX}${name}`;
@@ -216,20 +213,17 @@ async function moveTextToMC(name, value, assetTypeId, folderId, mcAuthResults, j
         // Create Marketing Cloud Block Asset
         await createMCAsset(mcAuthResults.access_token, textAssetBody, jobId, referenceId, name, false, null, org);
     } catch (error) {
-        console.log('Upload error -->', error);
-
-        // update file status in job queue
-
+        console.log('Upload error:', error);
+        // Update file status in job queue
         totalUploadItems = totalUploadItems - 1;
         failedItemsCount = failedItemsCount + 1;
 
         const response = `There is an error ${error}`;
         const uploadStatus = 'Failed';
-        // update job status    
+        // Update job status    
         if (jobId && response) {
             updateJobProgress(jobId, response, name, uploadStatus, referenceId);
         }
-
         updateStatusToServer(org);
     }
 }
@@ -244,14 +238,12 @@ async function moveImageToMC(imageNode, folderId, mcAuthResults, cmsAuthResults,
         const name = imageNode.name;
 
         try {
-
             if (imageUrl) {
                 const base64ImageBody = await downloadBase64FromURL(
                     imageUrl,
                     cmsAuthResults.access_token
                 );
 
-                
                 let imageAssetBody = {
                     name: fileName + imageExt,
                     assetType: {
@@ -267,39 +259,38 @@ async function moveImageToMC(imageNode, folderId, mcAuthResults, cmsAuthResults,
                     },
                 };
 
-                //Marketing Cloud Regex for file fullName i.e. Developer name
+                // Marketing Cloud Regex for file fullName i.e. Developer name
                 let mcRegex = /^[a-z](?!\w*__)(?:\w*[^\W_])?$/i;
                 // Create Marketing Cloud Image Asset
                 if (mcRegex.test(fileName)) {
                     await createMCAsset(mcAuthResults.access_token, imageAssetBody, jobId, referenceId, name, true, fileName, org);
                 } else {
-                    console.log('Error--->', response);
-
-                    // update file status in job queue
+                    console.log('Error:', response);
+                    // Update file status in job queue
                     totalUploadItems = totalUploadItems - 1;
                     failedItemsCount = failedItemsCount + 1;
-                
+
                     const response = `FileProperties.fileName contains prohibited characters: ${fileName}`;
                     const uploadStatus = 'Failed';
-                    // update job status    
+                    // Update job status    
                     if (jobId && response) {
                         updateJobProgress(jobId, response, name, uploadStatus, referenceId);
-                    }   
+                    }
                 }
-            }else{
-                console.log('Image url not available-->', fileName + imageExt)
+            } else {
+                console.log('Image url not available:', fileName + imageExt)
             }
             resolve();
         } catch (error) {
 
-            console.log('Upload error -->', error);
+            console.log('Upload error:', error);
 
-            // update file status in job queue
+            // Update file status in job queue
             totalUploadItems = totalUploadItems - 1;
             failedItemsCount = failedItemsCount + 1;
             const response = `There is an error ${error}`;
             const uploadStatus = 'Failed';
-            // update job status    
+            // Update job status    
             if (jobId && response) {
                 updateJobProgress(jobId, response, name, uploadStatus, referenceId);
             }
@@ -310,7 +301,6 @@ async function moveImageToMC(imageNode, folderId, mcAuthResults, cmsAuthResults,
 }
 
 // Method is use for move base 64 document to marketing cloud
-
 async function moveDocumentToMC(documentNode, folderId, mcAuthResults, cmsAuthResults, jobId, org) {
     return new Promise(async (resolve, reject) => {
         const docUrl = documentNode.unauthenticatedUrl ? documentNode.unauthenticatedUrl : documentNode.url;
@@ -341,7 +331,7 @@ async function moveDocumentToMC(documentNode, folderId, mcAuthResults, cmsAuthRe
                     },
                 };
 
-                //Marketing Cloud Regex for file fullName i.e. Developer name
+                // Marketing Cloud Regex for file fullName i.e. Developer name
                 let mcRegex = /^[a-z](?!\w*__)(?:\w*[^\W_])?$/i;
                 // Create Marketing Cloud Image Asset
                 if (mcRegex.test(fileName)) {
@@ -349,7 +339,7 @@ async function moveDocumentToMC(documentNode, folderId, mcAuthResults, cmsAuthRe
                 } else {
                     const response = `FileProperties.fileName contains prohibited characters: ${fileName}`;
                     const uploadStatus = 'Failed';
-                    // update job status    
+                    // Update job status    
                     if (jobId && response) {
                         updateJobProgress(jobId, response, name, uploadStatus, referenceId);
                     }
@@ -357,16 +347,16 @@ async function moveDocumentToMC(documentNode, folderId, mcAuthResults, cmsAuthRe
             }
             resolve();
         } catch (error) {
-            console.log('Upload error -->', error);
+            console.log('Upload error:', error);
 
-            // update file status in job queue
+            // Update file status in job queue
             totalUploadItems = totalUploadItems - 1;
             failedItemsCount = failedItemsCount + 1;
 
             const response = `There is an error ${error}`;
             const uploadStatus = 'Failed';
 
-            // update job status    
+            // Update job status    
             if (jobId && response) {
                 updateJobProgress(jobId, response, name, uploadStatus, referenceId);
             }
@@ -375,10 +365,8 @@ async function moveDocumentToMC(documentNode, folderId, mcAuthResults, cmsAuthRe
     });
 }
 
-
 // Method is use for send conent to marketing cloud
 async function createMCAsset(access_token, assetBody, jobId, referenceId, name, isMedia, fileName, org) {
-    console.log('name', name);
     return new Promise((resolve, reject) => {
         request.post(validateUrl(MC_REST_BASE_URI) + MC_ASSETS_API_PATH, {
             headers: {
@@ -388,10 +376,8 @@ async function createMCAsset(access_token, assetBody, jobId, referenceId, name, 
         },
             async (error, res, body) => {
                 totalUploadItems = totalUploadItems - 1;
-                
-                
                 if (error) {
-                    // update job status    
+                    // Update job status    
                     failedItemsCount = failedItemsCount + 1;
                     const response = `Error for:${assetBody.name} ${error}`;
                     const uploadStatus = 'Failed';
@@ -411,13 +397,13 @@ async function createMCAsset(access_token, assetBody, jobId, referenceId, name, 
                         if (errorCode) {
                             failedItemsCount = failedItemsCount + 1;
                         }
-                        // update job status    
+                        // Update job status    
                         if (jobId && response) {
                             updateJobProgress(jobId, response, name, uploadStatus, referenceId);
                         }
                         updateStatusToServer(org);
                     } catch (err) {
-                        console.log(`Error for: `, err);
+                        console.log('Error:', err);
                     }
                     resolve(res);
                 }
@@ -428,7 +414,7 @@ async function createMCAsset(access_token, assetBody, jobId, referenceId, name, 
 
 // Method is use to call the next batch service
 async function updateStatusToServer(org) {
-    // Csll the next betch service
+    // Call the next batch service
     if (totalUploadItems === 0) {
         setTimeout(async () => {
             callNextBatchService(org.oauth.access_token);
@@ -477,8 +463,6 @@ function updateAlreadySyncMediaStatus(skippedItems) {
                 const serverResponse = `Failed with Error code: 118039 - Error message: Asset names within a category and asset type must be unique.`;
                 const serverStatus = 'Already Uploaded';
                 items = [...job.items].map(jobEle => {
-
-                    // response
                     let response = jobEle.response;
                     let status = jobEle.status;
                     if (jobEle.name && ele.name && jobEle.name == ele.name) {
@@ -498,14 +482,9 @@ function updateAlreadySyncMediaStatus(skippedItems) {
             })
         });
     } catch (error) {
-        console.log(error);
+        console.log('Error:', error);
     }
 }
-
-
-
-
-
 
 /**
  * Method is use for get proper name according to version and content type
@@ -513,23 +492,23 @@ function updateAlreadySyncMediaStatus(skippedItems) {
  */
 function getAssestsWithProperNaming(result) {
     let finalArray = [];
-    try{
+    try {
         const { managedContentNodeTypes, items } = result;
         // Get name prefix
-    
+
         const defaultNameNode = managedContentNodeTypes.find(mcNode => mcNode.assetTypeId == 0);
         const nameKey = defaultNameNode ? defaultNameNode.nodeName : null;
-    
+
         items.forEach(item => {
             const title = item.title;
             const type = item.type;
             const contentNodes = item.contentNodes; // nodes 
             const namePrefix = nameKey && contentNodes[nameKey] ? contentNodes[nameKey].value : '';
             const publishedDate = item.publishedDate ? item.publishedDate : '';
-    
+
             //Filter node.nodeName except node with assetTypeId = 0
             let nodes = [...managedContentNodeTypes].filter(node => node.assetTypeId !== '0').map(node => node.nodeName);
-    
+
             //Filter nodes from the REST response as per the Salesforce CMS Content Type Node mapping
             Object.entries(contentNodes).forEach(([key, value]) => {
                 if (nodes.includes(key)) {
@@ -537,7 +516,7 @@ function getAssestsWithProperNaming(result) {
                     const nameSuffix = mcNodes ? mcNodes.nodeLabel : '';
                     const assetTypeId = mcNodes ? mcNodes.assetTypeId : '';
                     let objItem;
-    
+
                     if (value.nodeType === 'MediaSource') { // MediaSource - cms_image and cms_document
                         value.assetTypeId = assetTypeId;
                         objItem = { ...value, publishedDate, title, type, status: 'Queued', response: '' };
@@ -549,19 +528,17 @@ function getAssestsWithProperNaming(result) {
                     finalArray = [...finalArray, objItem];
                 }
             });
-    
+
         });
-    }catch(error){
-        console.log(`Error in name`,  error);
+    } catch (error) {
+        console.log('Error:', error);
     }
-    
+
     return finalArray;
 }
 
-
 // Method is use to update progress in job queue for logs screen
-
-function updateJobProgress(jobId, serverResponse, name, serverStatus, referenceId) { 
+function updateJobProgress(jobId, serverResponse, name, serverStatus, referenceId) {
     jobWorkQueueList = [...jobWorkQueueList].map(ele => {
         let percents = ele.progress;
         let counter = ele.counter || 0;
@@ -572,13 +549,12 @@ function updateJobProgress(jobId, serverResponse, name, serverStatus, referenceI
             percents = ((counter / totalItems) * 100).toFixed(1);
 
             items = [...ele.items].map(item => {
-                // response
                 let response = item.response;
                 let status = item.status;
-                if (name && (`${ASSETNAME_PREFIX}${item.name}` === name || item.name === name) && !item.response) {   
+                if (name && (`${ASSETNAME_PREFIX}${item.name}` === name || item.name === name) && !item.response) {
                     response = serverResponse;
                     status = serverStatus;
-                }else if (referenceId && item.referenceId === referenceId && !item.response) {
+                } else if (referenceId && item.referenceId === referenceId && !item.response) {
                     response = serverResponse;
                     status = serverStatus;
                 }
@@ -633,15 +609,15 @@ async function startUploadProcess(workQueue) {
                             job.id,
                             org
                         );
-                    }else{
-                        console.log(ele.assetTypeId);
+                    } else {
+                        console.log('Unknown assert type id', ele.assetTypeId);
                     }
                 })
                 workQueue.close()
                 done();
             }
         } catch (error) {
-            console.log('error', error);
+            console.log('Error:', error);
         }
     });
 }
@@ -700,15 +676,15 @@ async function createJobQueue(serviceResults, workQueue, cmsAuthResults, org, co
             }
         }
     } catch (error) {
-        console.log(error);
+        console.log('Error:', error);
     }
 }
 
-//Method is use to get all data form salesforce cms and create job for upload into marketing cloud. 
+// Method is use to get all data form salesforce cms and create job for upload into marketing cloud. 
 async function addProcessInQueue(workQueue, cmsAuthResults, org, contentTypeNodes, channelId, channelName, folderId) {
-    console.log('Total CMS Content Type --->', contentTypeNodes ? contentTypeNodes.length : 0);
-    console.log('Content Type Index --->', ctIndex);
-    console.log('nextPageUrl --->', nextPageUrl);
+    console.log('Total CMS Content Type:', contentTypeNodes ? contentTypeNodes.length : 0);
+    console.log('Content Type Index:', ctIndex);
+    console.log('nextPageUrl:', nextPageUrl);
 
     if (contentTypeNodes[ctIndex] && ctIndex < contentTypeNodes.length) {
         let skippedItems = [];
@@ -720,7 +696,7 @@ async function addProcessInQueue(workQueue, cmsAuthResults, org, contentTypeNode
 
         const ctPageSize = process.env.SF_CT_PAGESIZE ? process.env.SF_CT_PAGESIZE : 15;
         const cmsURL = nextPageUrl ? nextPageUrl : `/services/data/v${SF_API_VERSION}/connect/cms/delivery/channels/${channelId}/contents/query?managedContentType=${managedContentTypeAPI}&showAbsoluteUrl=true&pageSize=${ctPageSize}`;
-        
+
         let result = await org.getUrl(cmsURL); // Get the data from salesforce cms
 
         if (result) {
@@ -743,12 +719,12 @@ async function addProcessInQueue(workQueue, cmsAuthResults, org, contentTypeNode
                 // Call the upload start
                 startUploadProcess(workQueue);
             }
-            console.log('Total Skipped Items --->', skippedItemsSize);
-            console.log('Total Items --->', totalUploadItems);    
+            console.log('Total Skipped Items:', skippedItemsSize);
+            console.log('Total Items:', totalUploadItems);
         }
 
-        console.log('CMS NextPage Url --->', nextPageUrl);
-        console.log('Content Type Index --->', ctIndex);
+        console.log('CMS NextPage Url:', nextPageUrl);
+        console.log('Content Type Index:', ctIndex);
 
         skippedItemsCount = skippedItemsCount + skippedItems ? skippedItems.length : 0;
         if (skippedItems) {
@@ -757,9 +733,9 @@ async function addProcessInQueue(workQueue, cmsAuthResults, org, contentTypeNode
 
     } else {
         console.log('All Content Type synced');
-        console.log('Failed Items --->', failedItemsCount);
-        console.log('Skipped Items --->', skippedItemsCount);
-        
+        console.log('Failed Items:', failedItemsCount);
+        console.log('Skipped Items:', skippedItemsCount);
+
         nextPageUrl = '';
         ctIndex = 0;
         totalUploadItems = 0;
@@ -778,7 +754,6 @@ module.exports = {
             jobWorkQueueList = [];
         }
         const workQueue = new Queue(`work-${channelId}`, REDIS_URL);
-        console.log('workQueue-->', `work-${channelId}`)
         addProcessInQueue(workQueue, cmsAuthResults, org, contentTypeNodes, channelId, channelName, mcFolderId)
     },
 
@@ -792,7 +767,7 @@ module.exports = {
         })
             .then(res => res.json())
             .catch((err) => {
-                console.log(err);
+                console.log('Error:', err);
             });
     },
 
@@ -805,7 +780,7 @@ module.exports = {
                 'Authorization': `Bearer ${accessToken}`
             },
         }).then(res => res.json()).catch((err) => {
-            console.log(err);
+            console.log('Error:', err);
         });
     },
 
@@ -825,7 +800,7 @@ module.exports = {
         })
             .then(res => res.json())
             .catch((err) => {
-                console.log(err);
+                console.log('Error:', err);
             });
     },
 

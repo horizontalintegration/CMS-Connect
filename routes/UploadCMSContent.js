@@ -12,26 +12,26 @@ const whitelistUserAgent = 'SFDC';
 
 module.exports = (app) => {
     app.post('/uploadCMSContent', async (req, res, next) => {
-        
+
         if (req.headers['user-agent'] && req.headers['user-agent'].includes(whitelistUserAgent)) {
             try {
                 isLocal = req.hostname.indexOf("localhost") == 0;
                 if (req.hostname.indexOf(".herokuapp.com") > 0) {
                     herokuApp = req.hostname.replace(".herokuapp.com", "");
                 }
-    
+
                 let { contentTypeNodes, channelId, channelName, mcFolderId, source } = req.body;
-    
+
                 if (!contentTypeNodes || !channelId || !channelName || !source) {
                     res.send('Required fields not found.');
                 }
-                console.log('mcFolderId', isLocal);
+
                 if (isSetup()) {
                     mcFolderId = await checkFolderId(mcFolderId);
                     if (mcFolderId) {
                         contentTypeNodes = JSON.parse(contentTypeNodes);
                         try {
-                            //nforce setup to connect Salesforce
+                            // nforce setup to connect Salesforce
                             let org = nforce.createConnection({
                                 clientId: CONSUMER_KEY,
                                 clientSecret: CONSUMER_SECRET,
@@ -41,15 +41,15 @@ module.exports = (app) => {
                                 environment: SF_ENVIRONMENT,
                                 autoRefresh: true
                             });
-    
+
                             const resp = await org.authenticate({
                                 username: SF_USERNAME,
                                 password: SF_PASSWORD,
                                 securityToken: SF_SECURITY_TOKEN
                             });
-    
+
                             console.log("Salesforce authentication :", resp.access_token ? 'Successful' : 'Failure');
-    
+
                             if (resp.access_token) {
                                 run(resp, org, contentTypeNodes, channelId, channelName, mcFolderId, source);
                                 res.send('CMS Content Type is syncing in the background. Please wait..');
@@ -63,7 +63,7 @@ module.exports = (app) => {
                         updateSfRecord(null, null, MC_AUTH_FAILED_MSG);
                         res.send(MC_AUTH_FAILED_MSG);
                     }
-    
+
                 } else {
                     res.send('Required environment variables not found.');
                 }
@@ -106,7 +106,4 @@ module.exports = (app) => {
 
         return validFolderId;
     }
-
-
-
 }

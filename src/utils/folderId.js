@@ -12,9 +12,7 @@ const {
 
 } = require('../constants');
 
-
-
- async function getIdFromServer() {
+async function getIdFromServer() {
     try {
         const folderName = MC_FOLDER_NAME || 'CMS Connect Folder'; // Env folder name
         const mcAuthResults = await getMcAuth();
@@ -88,8 +86,7 @@ module.exports = {
         }
     },
 
-    getFolderIdFromServer: async function(){
+    getFolderIdFromServer: async function () {
         return await getIdFromServer();
     }
-    
 }

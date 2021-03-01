@@ -9,34 +9,30 @@ const { updateSfRecord, } = require('./src/utils/utils');
 const { getFolderIdFromServer } = require('./src/utils/folderId');
 const { jobs } = require('./src/mcUtils');
 
-
-
 const helmet = require("helmet");
-
 const { APP_NAME, IMAGE_CDN } = process.env;
-
 const ENV_URL = APP_NAME ? `https://${APP_NAME}.herokuapp.com` : '';
-
 const corsDomains = ENV_URL ? ENV_URL.split(',') : [];
+
 const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests).
-    if (!origin) return callback(null, true);
-    
-    // Block non-matching origins.
-    if (corsDomains.indexOf(origin) === -1) {
-      var msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+    origin: function (origin, callback) {
+        // Allow requests with no origin (like mobile apps or curl requests).
+        if (!origin) return callback(null, true);
 
-      return callback(new Error(msg), false);
-    }
+        // Block non-matching origins.
+        if (corsDomains.indexOf(origin) === -1) {
+            var msg = 'The CORS policy for this site does not allow access from the specified Origin.';
 
-    return callback(null, true);
-  },
+            return callback(new Error(msg), false);
+        }
+
+        return callback(null, true);
+    },
 };
+
 /*
  * CONFIGURE EXPRESS SERVER
  */
-
 const ALLOWED_CSS = 'https://www.herokucdn.com/purple3/latest/purple3.min.css'
 
 let app = express();
@@ -47,26 +43,23 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors(corsOptions));
 app.use(express.static(__dirname + '/public'));
 app.disable('x-powered-by');
-console.log('ENV_URL', ENV_URL)
-app.use((req, res, next) => {
-  res.set('Cache-Control','public', 'no-cache, no-store, must-revalidate');
-  res.set('Pragma', 'no-cache');
-  res.set('Expires', '0');
-  res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.set('Strict-Transport-Security', 'max-age=200');
-  res.set('X-Powered-By', '');
-  
-  res.set('X-XSS-Protection', '1; mode=block');
-  res.set('X-Content-Type-Options', 'nosniff');
-  // res.set('Content-Security-Policy',   `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.google-analytics.com *.googletagmanager.com tagmanager.google.com; object-src 'none'; style-src 'self' data: * ${ALLOWED_CSS}; 'unsafe-inline' *.typekit.net tagmanager.google.com fonts.googleapis.com; img-src 'self' data: *.google-analytics.com *.googletagmanager.com *.sfmc-content.com ssl.gstatic.com www.gstatic.com; frame-ancestors 'none'; frame-src 'none'; font-src 'self' data: *.typekit.net fonts.gstatic.com; connect-src 'self' *.google-analytics.com *.g.doubleclick.net;`);
-  res.set('X-Content-Security-Policy', `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.google-analytics.com *.googletagmanager.com tagmanager.google.com; object-src 'none'; style-src 'self' data: * ${ALLOWED_CSS}; 'unsafe-inline' *.typekit.net tagmanager.google.com fonts.googleapis.com; img-src 'self' data: *.google-analytics.com *.googletagmanager.com *.sfmc-content.com ssl.gstatic.com www.gstatic.com ${ALLOWED_CSS}; frame-ancestors 'none'; frame-src 'none'; font-src 'self' data: *.typekit.net fonts.gstatic.com; connect-src 'self' *.google-analytics.com *.g.doubleclick.net;`);
-  res.set('X-WebKit-CSP', `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.google-analytics.com *.googletagmanager.com tagmanager.google.com; object-src 'none'; style-src 'self'  data: * ${ALLOWED_CSS}; 'unsafe-inline' *.typekit.net tagmanager.google.com fonts.googleapis.com; img-src 'self' data: *.google-analytics.com *.googletagmanager.com *.sfmc-content.com ssl.gstatic.com www.gstatic.com ${ALLOWED_CSS}; frame-ancestors 'none'; frame-src 'none'; font-src 'self' data: *.typekit.net fonts.gstatic.com; connect-src 'self' *.google-analytics.com *.g.doubleclick.net;`);
-  res.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.set('Access-Control-Allow-Credentials', 'true');
-  res.set("X-Frame-Options", "ALLOW-FROM " + ENV_URL);
-  next();
-});
 
+app.use((req, res, next) => {
+    res.set('Cache-Control', 'public', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    res.set('Strict-Transport-Security', 'max-age=200');
+    res.set('X-Powered-By', '');
+    res.set('X-XSS-Protection', '1; mode=block');
+    res.set('X-Content-Type-Options', 'nosniff');
+    res.set('X-Content-Security-Policy', `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.google-analytics.com *.googletagmanager.com tagmanager.google.com; object-src 'none'; style-src 'self' data: * ${ALLOWED_CSS}; 'unsafe-inline' *.typekit.net tagmanager.google.com fonts.googleapis.com; img-src 'self' data: *.google-analytics.com *.googletagmanager.com *.sfmc-content.com ssl.gstatic.com www.gstatic.com ${ALLOWED_CSS}; frame-ancestors 'none'; frame-src 'none'; font-src 'self' data: *.typekit.net fonts.gstatic.com; connect-src 'self' *.google-analytics.com *.g.doubleclick.net;`);
+    res.set('X-WebKit-CSP', `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' *.google-analytics.com *.googletagmanager.com tagmanager.google.com; object-src 'none'; style-src 'self'  data: * ${ALLOWED_CSS}; 'unsafe-inline' *.typekit.net tagmanager.google.com fonts.googleapis.com; img-src 'self' data: *.google-analytics.com *.googletagmanager.com *.sfmc-content.com ssl.gstatic.com www.gstatic.com ${ALLOWED_CSS}; frame-ancestors 'none'; frame-src 'none'; font-src 'self' data: *.typekit.net fonts.gstatic.com; connect-src 'self' *.google-analytics.com *.g.doubleclick.net;`);
+    res.set('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.set('Access-Control-Allow-Credentials', 'true');
+    res.set("X-Frame-Options", "ALLOW-FROM " + ENV_URL);
+    next();
+});
 
 // Kick off a new job by adding it to the work queue
 app.get('/', async (req, res) => {
@@ -75,36 +68,32 @@ app.get('/', async (req, res) => {
 
 // Kick off a new job by adding it to the work queue
 app.get('/jobs', async (req, res) => {
-  res.json({ jobs: jobs() });
+    res.json({ jobs: jobs() });
 });
-
 
 // Method return log queue.
 app.get("/queue", async function (req, res) {
-  const { cmsConnectionId, channelId } = req.query;
-  console.log('cmsConnectionId-->', cmsConnectionId)
-  if (process.env.SF_CMS_CONNECTION_ID === cmsConnectionId) {
-      res.sendFile('./queue.html', { root: __dirname });
-  } else {
-      res.send('Required fields not found.');
-  }
+    const { cmsConnectionId, channelId } = req.query;
+    if (process.env.SF_CMS_CONNECTION_ID === cmsConnectionId) {
+        res.sendFile('./queue.html', { root: __dirname });
+    } else {
+        res.send('Required fields not found.');
+    }
 
 });
 
 require('./routes/UploadCMSContent')(app);
 
-
 // Initialize the app.
 app.listen(process.env.PORT || 3000, async function () {
-    //Get App Ul
+    // Get App Ul
     const appUrl = `https://${process.env.APP_NAME}.herokuapp.com`;
-    console.log('appUrl', appUrl);
     if (appUrl) {
-        //Get MC Folder Id
+        // Get MC Folder Id
         const mcFolderRes = await getFolderIdFromServer();
         console.log(`Launching Heroku App with URL ${appUrl} and MC Folder Id:`, mcFolderRes);
         if (mcFolderRes && mcFolderRes.id) {
-            //Update call back url and mc folder id
+            // Update call back url and mc folder id
             updateSfRecord(appUrl, mcFolderRes.id);
         } else if (mcFolderRes && mcFolderRes.errorMsg) {
             updateSfRecord(null, null, mcFolderRes.errorMsg);
