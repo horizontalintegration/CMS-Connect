@@ -5,7 +5,7 @@ module.exports = {
     MC_CONTENT_QUERY_API_PATH: '/asset/v1/content/assets/query',
     REDIS_URL: process.env.REDIS_URL || 'redis://127.0.0.1:6379',
 
-    SF_CMS_CONNECTION_SOQL: `SELECT Id, Heroku_Endpoint__c, SFMC_Folder_Id__c, Connection_Status__c FROM CMS_Connection__c WHERE Id = '${process.env.SF_CMS_CONNECTION_ID}' LIMIT 1`,
+    SF_CMS_CONNECTION_SOQL: `SELECT Id, cmsc__Heroku_Endpoint__c, cmsc__SFMC_Folder_Id__c, cmsc__Connection_Status__c FROM cmsc__CMS_Connection__c WHERE Id = '${process.env.SF_CMS_CONNECTION_ID}' LIMIT 1`,
     ALLOWED_CONNECTION_STATUS: 'Not Configured',
     CONNETION_STATUS: 'Active',
     CONNETION_FAILED_STATUS: 'Failed',

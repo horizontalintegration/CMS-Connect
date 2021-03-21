@@ -234,7 +234,7 @@ function getDocumentAssetTypeId(docExtension) {
 }
 
 async function downloadBase64FromURL(url, access_token, callback) {
-   return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
         https
             .get(
                 url,
@@ -243,7 +243,7 @@ async function downloadBase64FromURL(url, access_token, callback) {
                     if (resp) {
                         resp.setEncoding('base64');
                         body = "data:" + resp.headers["content-type"] + ";base64,";
-                        resp.on('data', (data) => { body += data});
+                        resp.on('data', (data) => { body += data });
 
                         let imageBody = '';
                         resp.on('data', (data) => {
@@ -316,25 +316,25 @@ module.exports = {
                     let sobject = resQuery.records[0];
 
                     if (mcError) {
-                        sobject.set('Connection_Status__c', CONNETION_FAILED_STATUS);
-                        sobject.set('Error_Message__c', mcError);
+                        sobject.set('cmsc__Connection_Status__c', CONNETION_FAILED_STATUS);
+                        sobject.set('cmsc__Error_Message__c', mcError);
                     } else if (!mcError && dateTime) {
                         console.log('Updating SF Last Sync Time:', new Date().toISOString())
-                        sobject.set('Connection_Status__c', CONNETION_STATUS);
-                        sobject.set('Error_Message__c', '');
-                        sobject.set('Last_Synchronized_Time__c', new Date().toISOString());
-                    } else if (!mcError && !dateTime && (sobject._fields.connection_status__c === null
-                        || sobject._fields.connection_status__c === ALLOWED_CONNECTION_STATUS
-                        || sobject._fields.connection_status__c === CONNETION_FAILED_STATUS
-                        || sobject._fields.sfmc_folder_id__c != folderId
-                        || sobject._fields.heroku_endpoint__c != appName)) {
+                        sobject.set('cmsc__Connection_Status__c', CONNETION_STATUS);
+                        sobject.set('cmsc__Error_Message__c', '');
+                        sobject.set('cmsc__Last_Synchronized_Time__c', new Date().toISOString());
+                    } else if (!mcError && !dateTime && (sobject._fields.cmsc__connection_status__c === null
+                        || sobject._fields.cmsc__connection_status__c === ALLOWED_CONNECTION_STATUS
+                        || sobject._fields.cmsc__connection_status__c === CONNETION_FAILED_STATUS
+                        || sobject._fields.cmsc__sfmc_folder_id__c != folderId
+                        || sobject._fields.cmsc__heroku_endpoint__c != appName)) {
 
                         if (appName) {
-                            sobject.set('Heroku_Endpoint__c', appName);
+                            sobject.set('cmsc__Heroku_Endpoint__c', appName);
                         }
-                        sobject.set('Connection_Status__c', CONNETION_STATUS);
-                        sobject.set('Error_Message__c', '');
-                        sobject.set('SFMC_Folder_Id__c', folderId);
+                        sobject.set('cmsc__Connection_Status__c', CONNETION_STATUS);
+                        sobject.set('cmsc__Error_Message__c', '');
+                        sobject.set('cmsc__SFMC_Folder_Id__c', folderId);
                     }
                     await org.update({ sobject, oauth });
                 } else {
@@ -348,7 +348,7 @@ module.exports = {
         }
     },
 
-    isSetup: function() {
+    isSetup: function () {
         return (
             isNotBlank(process.env.APP_NAME) &&
             isNotBlank(process.env.CONSUMER_KEY) &&
@@ -367,7 +367,7 @@ module.exports = {
             isNotBlank(process.env.MC_FOLDER_NAME)
         );
     },
-    oauthCallbackUrl: function(req) {
+    oauthCallbackUrl: function (req) {
         return req.protocol + "://" + req.get("host");
     }
 }
