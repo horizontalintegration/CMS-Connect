@@ -8,5 +8,4 @@ module.exports = (app) => {
             res.send('Required fields not found.');
         }
     });
-    
 }
