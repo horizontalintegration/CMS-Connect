@@ -665,9 +665,14 @@ async function createJobQueue(serviceResults, workQueue, cmsAuthResults, org, co
                     } else if (node) {
                         jobItems = [...jobItems, node];
                     }
+
+                    console.log('jobItems-->', jobItems);
+
                 }
             }))
 
+            console.log('jobItems-->', jobItems);
+            
             if (jobItems && jobItems.length) {
                 // content type
                 const job = await workQueue.add({ content: { items: jobItems, cmsAuthResults, folderId, totalItems: items.length, org } }, {
