@@ -416,8 +416,6 @@ async function createMCAsset(access_token, assetBody, jobId, referenceId, name, 
 // Method is use to call the next batch service
 async function updateStatusToServer(org) {
 
-    console.log('totalUploadItems-->', totalUploadItems);
-
     // Call the next batch service
     if (totalUploadItems === 0) {
         setTimeout(async () => {
@@ -438,7 +436,7 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
         const ext = urlFileName ? path.parse(urlFileName).ext : null;
         const publishedDate = node.publishedDate ? node.publishedDate.replace(/[^a-zA-Z0-9]/g, "") : '';
 
-        let fileName = node.fileName ? node.fileName : `CMS${path.parse(urlFileName).base}`;
+        let fileName = node.fileName ? node.fileName : `${path.parse(urlFileName).base}`;
 
         fileName = node.name ? node.name.replace(/[^a-zA-Z0-9]/g, "") : `${path.parse(fileName).name.replace(/[^a-zA-Z0-9]/g, "")}${publishedDate}`;
 
@@ -764,7 +762,6 @@ module.exports = {
         if (source !== 'Heroku') {
             jobWorkQueueList = [];
         }
-        console.log('source-->', source);
         const workQueue = new Queue(`work-${channelId}`, REDIS_URL);
         addProcessInQueue(workQueue, cmsAuthResults, org, contentTypeNodes, channelId, channelName, mcFolderId)
     },
