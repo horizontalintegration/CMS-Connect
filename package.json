@@ -8,10 +8,6 @@
 	"main": "app.js",
 	"scripts": {
 		"start": "node --expose_gc app.js",
-        "build": "echo This command will automatically run on deployment.",
-		"heroku-prebuild": "echo This runs before Heroku installs dependencies.",
-        "heroku-postbuild": "heroku config:set TIMES=2",
-		"heroku-cleanup": "echo This runs after Heroku prunes and caches dependencies."
 	},
 	"dependencies": {
 		"body-parser": "^1.19.0",
