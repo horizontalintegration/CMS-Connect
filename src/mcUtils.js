@@ -637,6 +637,8 @@ async function createJobQueue(serviceResults, workQueue, cmsAuthResults, org, co
             totalUploadItems = items.length;
             let jobItems = [];
 
+            console.log('totalUploadItems-->', totalUploadItems);
+
             await Promise.all([...items].map(async (ele) => {
                 // Content
                 if (ele.assetTypeId === '196' || ele.assetTypeId === '197') {
@@ -711,11 +713,13 @@ async function addProcessInQueue(workQueue, cmsAuthResults, org, contentTypeNode
             skippedItems = await createJobQueue(serviceResults, workQueue, cmsAuthResults, org, contentTypeNodes, channelId, folderId, channelName, skippedItems, managedContentNodeTypes, managedContentTypeLabel, Id)
 
             const skippedItemsSize = skippedItems ? skippedItems.length : 0;
+            console.log('Total Skipped Items:', skippedItemsSize);
             if (skippedItemsSize === totalUploadItems) {
                 totalUploadItems = totalUploadItems - skippedItemsSize;
                 updateStatusToServer(org);
             } else {
                 totalUploadItems = totalUploadItems - skippedItemsSize;
+                console.log('Total Items to uploads Items:', totalUploadItems);
                 // Call the upload start
                 startUploadProcess(workQueue);
             }
@@ -727,6 +731,8 @@ async function addProcessInQueue(workQueue, cmsAuthResults, org, contentTypeNode
         console.log('Content Type Index:', ctIndex);
 
         skippedItemsCount = skippedItemsCount + skippedItems ? skippedItems.length : 0;
+
+        console.log('Total Skipped Items:', skippedItemsCount);
         if (skippedItems) {
             updateAlreadySyncMediaStatus(skippedItems);
         }
