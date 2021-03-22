@@ -271,7 +271,7 @@ async function moveImageToMC(imageNode, folderId, mcAuthResults, cmsAuthResults,
 
                     const response = `FileProperties.fileName contains prohibited characters: ${fileName}`;
                     const uploadStatus = 'Failed';
-                    console.log('response-->', response);
+                    console.log(response);
                     // Update job status    
                     if (jobId && response) {
                         updateJobProgress(jobId, response, name, uploadStatus, referenceId);
@@ -428,11 +428,11 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
     const referenceId = node.referenceId || null;
     const name = node.name;
 
-    const url = node.unauthenticatedUrl ? `${node.unauthenticatedUrl}` : node.url ? `${node.url}` :  null;
+    const url = node.unauthenticatedUrl ? `${node.unauthenticatedUrl}` : node.url ? `${node.url}` : null;
 
     if (url) {
 
-        const urlFileName  = node.fileName || url.substring(url.lastIndexOf('/') + 1);
+        const urlFileName = node.fileName || url.substring(url.lastIndexOf('/') + 1);
         const ext = urlFileName ? path.parse(urlFileName).ext : null;
         const publishedDate = node.publishedDate ? node.publishedDate.replace(/[^a-zA-Z0-9]/g, "") : '';
 
