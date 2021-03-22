@@ -640,6 +640,8 @@ async function createJobQueue(serviceResults, workQueue, cmsAuthResults, org, co
 
             console.log('totalUploadItems-->', totalUploadItems);
 
+            console.log('totalUploadItems items-->', items);
+
             await Promise.all([...items].map(async (ele) => {
                 // Content
                 if (ele.assetTypeId === '196' || ele.assetTypeId === '197') {
