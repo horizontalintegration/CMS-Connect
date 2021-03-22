@@ -81,7 +81,7 @@
             "value": "CMS Connect Folder"
         },
         "NODE_OPTIONS": {
-            "description": "Don't update/remove this config var, required for Heroku app efficiently.",
+            "description": "Don't update/remove this config var, required for Heroku app to work efficiently.",
             "required": true,
             "value": "--max_old_space_size=8192"
         }
