@@ -434,8 +434,12 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
 
         console.log('filename-->', url.substring(url.lastIndexOf('/') + 1));
 
+        const fileName  = node.fileName || url.substring(url.lastIndexOf('/') + 1);
 
-        const ext = node.fileName ? path.parse(node.fileName).ext : null;
+        const ext = fileName ? path.parse(fileName).ext : null;
+
+        console.log('ext-->',ext);
+
         const publishedDate = node.publishedDate ? node.publishedDate.replace(/[^a-zA-Z0-9]/g, "") : '';
 
         let fileName = node.name ? node.name.replace(/[^a-zA-Z0-9]/g, "") : `${path.parse(node.fileName).name.replace(/[^a-zA-Z0-9]/g, "")}${publishedDate}`;
@@ -443,7 +447,9 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
         fileName = `${ASSETNAME_PREFIX}${fileName}`;
 
         console.log('fileName-->', fileName);
+
         const notInMC = await verfiyFileNameMCFolder(folderId, fileName + ext, alreadySyncedContents);
+        
         console.log('notInMC-->', notInMC);
         if (notInMC) {
             return {
