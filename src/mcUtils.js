@@ -656,6 +656,8 @@ async function createJobQueue(serviceResults, workQueue, cmsAuthResults, org, co
                 // Image and Document
                 else if (ele => ele.assetTypeId === '8' || ele.assetTypeId === '11') {
                     const node = await getMediaSourceFile(ele, alreadySyncedContents, folderId);
+                    console.log('node-->', node);
+
                     if (typeof node == "string") {
                         const referenceId = ele.referenceId || null;
                         let name = ele.name;
