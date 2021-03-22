@@ -577,6 +577,7 @@ async function startUploadProcess(workQueue) {
         try {
             let { content } = job.data;
             const { items, folderId, org } = content;
+            console.log('workQueue.process-->', items);
             if (items) {
                 //Upload CMS content to Marketing Cloud
                 items.map(async (ele) => {
