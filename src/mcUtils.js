@@ -429,6 +429,9 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
     const url = node.unauthenticatedUrl ? `${node.unauthenticatedUrl}` : node.url ? `${node.url}` :  null;
 
     if (url) {
+
+        console.log('url-->', url);
+
         const ext = node.fileName ? path.parse(node.fileName).ext : null;
         const publishedDate = node.publishedDate ? node.publishedDate.replace(/[^a-zA-Z0-9]/g, "") : '';
 
@@ -436,7 +439,9 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
 
         fileName = `${ASSETNAME_PREFIX}${fileName}`;
 
+        console.log('fileName-->', fileName);
         const notInMC = await verfiyFileNameMCFolder(folderId, fileName + ext, alreadySyncedContents);
+        console.log('notInMC-->', notInMC);
         if (notInMC) {
             return {
                 assetTypeId: node.assetTypeId,
