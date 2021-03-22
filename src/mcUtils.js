@@ -265,13 +265,13 @@ async function moveImageToMC(imageNode, folderId, mcAuthResults, cmsAuthResults,
                 if (mcRegex.test(fileName)) {
                     await createMCAsset(mcAuthResults.access_token, imageAssetBody, jobId, referenceId, name, true, fileName, org);
                 } else {
-                    console.log('Error:', response);
                     // Update file status in job queue
                     totalUploadItems = totalUploadItems - 1;
                     failedItemsCount = failedItemsCount + 1;
 
                     const response = `FileProperties.fileName contains prohibited characters: ${fileName}`;
                     const uploadStatus = 'Failed';
+                    console.log('response-->', response);
                     // Update job status    
                     if (jobId && response) {
                         updateJobProgress(jobId, response, name, uploadStatus, referenceId);
@@ -432,6 +432,8 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
 
         const urlFileName  = node.fileName || url.substring(url.lastIndexOf('/') + 1);
 
+        console.log('fileName-->',urlFileName);
+
         const ext = urlFileName ? path.parse(urlFileName).ext : null;
 
         console.log('ext-->',ext);
@@ -439,7 +441,6 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
         const publishedDate = node.publishedDate ? node.publishedDate.replace(/[^a-zA-Z0-9]/g, "") : '';
 
         let fileName = node.fileName ? node.fileName : path.parse(urlFileName).base;
-        
         console.log('fileName-->',fileName);
 
         fileName = node.name ? node.name.replace(/[^a-zA-Z0-9]/g, "") : `${path.parse(fileName).name.replace(/[^a-zA-Z0-9]/g, "")}${publishedDate}`;
