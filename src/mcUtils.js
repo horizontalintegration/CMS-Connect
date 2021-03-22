@@ -431,27 +431,17 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
     if (url) {
 
         const urlFileName  = node.fileName || url.substring(url.lastIndexOf('/') + 1);
-
-        console.log('fileName-->',urlFileName);
-
         const ext = urlFileName ? path.parse(urlFileName).ext : null;
-
-        console.log('ext-->',ext);
-
         const publishedDate = node.publishedDate ? node.publishedDate.replace(/[^a-zA-Z0-9]/g, "") : '';
 
         let fileName = node.fileName ? node.fileName : path.parse(urlFileName).base;
-        console.log('fileName-->',fileName);
 
         fileName = node.name ? node.name.replace(/[^a-zA-Z0-9]/g, "") : `${path.parse(fileName).name.replace(/[^a-zA-Z0-9]/g, "")}${publishedDate}`;
 
         fileName = `${ASSETNAME_PREFIX}${fileName}`;
 
-        console.log('fileName-->', fileName);
-
         const notInMC = await verfiyFileNameMCFolder(folderId, fileName + ext, alreadySyncedContents);
-        
-        console.log('notInMC-->', notInMC);
+
         if (notInMC) {
             return {
                 assetTypeId: node.assetTypeId,
@@ -592,7 +582,6 @@ async function startUploadProcess(workQueue) {
         try {
             let { content } = job.data;
             const { items, folderId, org } = content;
-            console.log('workQueue.process-->', items);
             if (items) {
                 //Upload CMS content to Marketing Cloud
                 items.map(async (ele) => {
@@ -653,10 +642,6 @@ async function createJobQueue(serviceResults, workQueue, cmsAuthResults, org, co
             totalUploadItems = items.length;
             let jobItems = [];
 
-            console.log('totalUploadItems-->', totalUploadItems);
-
-            console.log('totalUploadItems items-->', items);
-
             await Promise.all([...items].map(async (ele) => {
                 // Content
                 if (ele.assetTypeId === '196' || ele.assetTypeId === '197') {
@@ -671,7 +656,6 @@ async function createJobQueue(serviceResults, workQueue, cmsAuthResults, org, co
                 // Image and Document
                 else if (ele => ele.assetTypeId === '8' || ele.assetTypeId === '11') {
                     const node = await getMediaSourceFile(ele, alreadySyncedContents, folderId);
-                    console.log('node-->', node);
 
                     if (typeof node == "string") {
                         const referenceId = ele.referenceId || null;
@@ -681,12 +665,8 @@ async function createJobQueue(serviceResults, workQueue, cmsAuthResults, org, co
                         jobItems = [...jobItems, node];
                     }
 
-                    console.log('jobItems-->', jobItems);
-
                 }
             }))
-
-            console.log('jobItems-->', jobItems);
 
             if (jobItems && jobItems.length) {
                 // content type
@@ -738,18 +718,14 @@ async function addProcessInQueue(workQueue, cmsAuthResults, org, contentTypeNode
             skippedItems = await createJobQueue(serviceResults, workQueue, cmsAuthResults, org, contentTypeNodes, channelId, folderId, channelName, skippedItems, managedContentNodeTypes, managedContentTypeLabel, Id)
 
             const skippedItemsSize = skippedItems ? skippedItems.length : 0;
-            console.log('Total Skipped Items:', skippedItemsSize);
             if (skippedItemsSize === totalUploadItems) {
                 totalUploadItems = totalUploadItems - skippedItemsSize;
                 updateStatusToServer(org);
             } else {
                 totalUploadItems = totalUploadItems - skippedItemsSize;
-                console.log('Total Items to uploads Items:', totalUploadItems);
                 // Call the upload start
                 startUploadProcess(workQueue);
             }
-            console.log('Total Skipped Items:', skippedItemsSize);
-            console.log('Total Items:', totalUploadItems);
         }
 
         console.log('CMS NextPage Url:', nextPageUrl);
