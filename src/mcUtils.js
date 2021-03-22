@@ -434,7 +434,7 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
         const ext = urlFileName ? path.parse(urlFileName).ext : null;
         const publishedDate = node.publishedDate ? node.publishedDate.replace(/[^a-zA-Z0-9]/g, "") : '';
 
-        let fileName = node.fileName ? node.fileName : path.parse(urlFileName).base;
+        let fileName = node.fileName ? node.fileName : `CMS${path.parse(urlFileName).base}`;
 
         fileName = node.name ? node.name.replace(/[^a-zA-Z0-9]/g, "") : `${path.parse(fileName).name.replace(/[^a-zA-Z0-9]/g, "")}${publishedDate}`;
 
