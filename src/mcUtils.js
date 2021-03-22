@@ -764,6 +764,7 @@ module.exports = {
         if (source !== 'Heroku') {
             jobWorkQueueList = [];
         }
+        console.log('source-->', source);
         const workQueue = new Queue(`work-${channelId}`, REDIS_URL);
         addProcessInQueue(workQueue, cmsAuthResults, org, contentTypeNodes, channelId, channelName, mcFolderId)
     },
