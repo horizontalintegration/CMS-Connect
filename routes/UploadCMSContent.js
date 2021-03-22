@@ -12,8 +12,6 @@ const whitelistUserAgent = 'SFDC';
 
 module.exports = (app) => {
     app.post('/uploadCMSContent', async (req, res, next) => {
-        console.log('uploadCMSContent:', req.headers['user-agent']);
-        console.log('req.body:', req.body);
         if (req.headers['user-agent'] && req.headers['user-agent'].includes(whitelistUserAgent)) {
             try {
                 isLocal = req.hostname.indexOf("localhost") == 0;

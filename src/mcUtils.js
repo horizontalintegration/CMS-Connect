@@ -38,7 +38,7 @@ async function callNextBatchService(accessToken) {
     try {
         const body = { cmsConnectionId: SF_CMS_CONNECTION_ID }
 
-        const url = `${validateUrl(SF_CMS_URL)}/services/apexrest/CMSSFMC/callHeroku`;
+        const url = `${validateUrl(SF_CMS_URL)}/services/apexrest/cmsc/CMSSFMC/callHeroku`;
 
         const res = await fetch(url, {
             method: 'POST',
@@ -50,7 +50,7 @@ async function callNextBatchService(accessToken) {
         });
 
         const response = await res.json();
-        console.log('Saleforce Web Service API Called', response);
+        console.log('Saleforce Web Service API Called');
     } catch (error) {
         console.log('Error in next call:', error);
     }
