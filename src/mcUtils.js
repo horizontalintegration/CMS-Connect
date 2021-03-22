@@ -434,11 +434,11 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
 
         console.log('filename-->', url.substring(url.lastIndexOf('/') + 1));
 
-        const fileName  = node.fileName || url.substring(url.lastIndexOf('/') + 1);
+        const urlFileName  = node.fileName || url.substring(url.lastIndexOf('/') + 1);
 
         console.log('fileName-->',fileName);
 
-        const ext = fileName ? path.parse(fileName).ext : null;
+        const ext = urlFileName ? path.parse(urlFileName).ext : null;
 
         console.log('ext-->',ext);
 
