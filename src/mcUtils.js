@@ -426,7 +426,7 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
     const referenceId = node.referenceId || null;
     const name = node.name;
 
-    const url = node.unauthenticatedUrl ? `${node.unauthenticatedUrl}` : null;
+    const url = node.unauthenticatedUrl ? `${node.unauthenticatedUrl}` : node.url ? `${node.url}` :  null;
 
     if (url) {
         const ext = node.fileName ? path.parse(node.fileName).ext : null;
@@ -672,7 +672,7 @@ async function createJobQueue(serviceResults, workQueue, cmsAuthResults, org, co
             }))
 
             console.log('jobItems-->', jobItems);
-            
+
             if (jobItems && jobItems.length) {
                 // content type
                 const job = await workQueue.add({ content: { items: jobItems, cmsAuthResults, folderId, totalItems: items.length, org } }, {
