@@ -432,6 +432,9 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
 
         console.log('url-->', url);
 
+        console.log('filename-->', url.substring(url.lastIndexOf('/') + 1));
+
+
         const ext = node.fileName ? path.parse(node.fileName).ext : null;
         const publishedDate = node.publishedDate ? node.publishedDate.replace(/[^a-zA-Z0-9]/g, "") : '';
 
