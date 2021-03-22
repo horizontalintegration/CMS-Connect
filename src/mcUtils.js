@@ -276,6 +276,7 @@ async function moveImageToMC(imageNode, folderId, mcAuthResults, cmsAuthResults,
                     if (jobId && response) {
                         updateJobProgress(jobId, response, name, uploadStatus, referenceId);
                     }
+                    updateStatusToServer(org);
                 }
             } else {
                 console.log('Image url not available:', fileName + imageExt)
@@ -414,6 +415,9 @@ async function createMCAsset(access_token, assetBody, jobId, referenceId, name, 
 
 // Method is use to call the next batch service
 async function updateStatusToServer(org) {
+
+    console.log('totalUploadItems-->', totalUploadItems);
+
     // Call the next batch service
     if (totalUploadItems === 0) {
         setTimeout(async () => {
