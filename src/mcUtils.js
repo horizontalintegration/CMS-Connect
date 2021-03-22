@@ -50,7 +50,7 @@ async function callNextBatchService(accessToken) {
         });
 
         const response = await res.json();
-        console.log('Saleforce Web Service API Called');
+        console.log('Saleforce Web Service API Called', response);
     } catch (error) {
         console.log('Error in next call:', error);
     }

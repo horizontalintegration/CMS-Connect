@@ -1,45 +1,49 @@
 {
-  "name": "CMS-Connect",
-  "version": "0.0.1",
-  "description": "The quickest and easiest way to move CMS content to Marketing Cloud",
-  "engines": {
-    "node": "12.x"
-  },
-  "main": "app.js",
-  "scripts": {
-    "start": "node --expose_gc app.js"
-  },
-  "dependencies": {
-    "body-parser": "^1.19.0",
-    "bull": "^3.4.8",
-    "cors": "^2.8.5",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "helmet": "^4.4.1",
-    "https": "^1.0.0",
-    "install": "^0.13.0",
-    "nforce": "^1.12.2",
-    "node-fetch": "^2.6.1",
-    "path": "^0.12.7",
-    "redis": "^3.0.2",
-    "redis-cli": "^2.0.0",
-    "redis-server": "^1.2.2",
-    "request": "^2.88.2",
-    "unescape": "^1.0.1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/horizontalintegration/CMS-Connect/blob/master"
-  },
-  "keywords": [
-    "node",
-    "heroku",
-    "express",
-    "nforce",
-    "salesforce",
-    "heroku-redis:hobby-dev"
-  ],
-  "devDependencies": {
-    "cors": "^2.8.5"
-  }
+	"name": "CMS-Connect",
+	"version": "0.0.1",
+	"description": "The quickest and easiest way to move CMS content to Marketing Cloud",
+	"engines": {
+		"node": "12.x"
+	},
+	"main": "app.js",
+	"scripts": {
+		"start": "node --expose_gc app.js",
+        "build": "echo This command will automatically run on deployment.",
+		"heroku-prebuild": "echo This runs before Heroku installs dependencies.",
+        "heroku-postbuild": "heroku config:set TIMES=2",
+		"heroku-cleanup": "echo This runs after Heroku prunes and caches dependencies."
+	},
+	"dependencies": {
+		"body-parser": "^1.19.0",
+		"bull": "^3.4.8",
+		"cors": "^2.8.5",
+		"dotenv": "^8.2.0",
+		"express": "^4.17.1",
+		"helmet": "^4.4.1",
+		"https": "^1.0.0",
+		"install": "^0.13.0",
+		"nforce": "^1.12.2",
+		"node-fetch": "^2.6.1",
+		"path": "^0.12.7",
+		"redis": "^3.0.2",
+		"redis-cli": "^2.0.0",
+		"redis-server": "^1.2.2",
+		"request": "^2.88.2",
+		"unescape": "^1.0.1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/horizontalintegration/CMS-Connect/blob/master"
+	},
+	"keywords": [
+		"node",
+		"heroku",
+		"express",
+		"nforce",
+		"salesforce",
+		"heroku-redis:hobby-dev"
+	],
+	"devDependencies": {
+		"cors": "^2.8.5"
+	}
 }
