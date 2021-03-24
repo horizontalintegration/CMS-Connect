@@ -262,8 +262,6 @@ function getAssestsWithProperNaming(result) {
     } catch (error) {
         console.log('Error:', error);
     }
-
-    console.log('finalArray:', finalArray);
     return finalArray;
 }
 
@@ -653,8 +651,8 @@ async function createMCAsset(access_token, assetBody, jobId, referenceId, name, 
                         const response = body.id ? `Uploaded with Asset Id: ${body.id}` : `Failed with Error code: ${errorCode} - Error message: ${msg}`;
                         const uploadStatus = body.id ? 'Uploaded' : 'Failed';
 
-                        console.log(body.id 
-                            ? `${assetBody.customerKey} - ${assetBody.name} uploaded with status code: ${res.statusCode} - Asset Id: ${body.id}` 
+                        console.log(body.id
+                            ? `${assetBody.customerKey} - ${assetBody.name} uploaded with status code: ${res.statusCode} - Asset Id: ${body.id}`
                             : `${assetBody.customerKey} - ${assetBody.name} failed with status code: ${res.statusCode} - Error code: ${errorCode} - Error message: ${msg}`);
                         if (errorCode) {
                             failedItemsCount = failedItemsCount + 1;
