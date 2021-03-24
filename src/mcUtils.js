@@ -377,7 +377,6 @@ async function createMCAsset(access_token, assetBody, jobId, referenceId, name, 
         },
             async (error, res, body) => {
                 totalUploadItems = totalUploadItems - 1;
-                console.log('error--->', error);
                 if (error) {
                     // Update job status    
                     failedItemsCount = failedItemsCount + 1;
@@ -465,8 +464,6 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
 
 function updateAlreadySyncMediaStatus(skippedItems) {
     try {
-        console.log('updateAlreadySyncMediaStatus skippedItems--->', skippedItems);
-        console.log('updateAlreadySyncMediaStatus jobWorkQueueList--->', jobWorkQueueList[0].items);
         skippedItems.forEach(ele => {
             jobWorkQueueList = jobWorkQueueList.map(job => {
 
@@ -556,8 +553,6 @@ function getAssestsWithProperNaming(result) {
 
 // Method is use to update progress in job queue for logs screen
 function updateJobProgress(jobId, serverResponse, name, serverStatus, referenceId) {
-    console.log('name-->', name);
-    console.log('referenceId-->', referenceId);
     jobWorkQueueList = [...jobWorkQueueList].map(ele => {
         let percents = ele.progress;
         let counter = ele.counter || 0;
@@ -648,7 +643,6 @@ async function startUploadProcess(workQueue) {
 
 async function createJobQueue(serviceResults, workQueue, cmsAuthResults, org, contentTypeNodes, channelId, folderId, channelName, skippedItems, managedContentNodeTypes, managedContentTypeLabel, Id) {
     try {
-        console.log('skippedItems-->', skippedItems);
         const alreadySyncedContents = await getPresentMCAssets(folderId);
 
         if (serviceResults && serviceResults.length) {
@@ -671,8 +665,6 @@ async function createJobQueue(serviceResults, workQueue, cmsAuthResults, org, co
                 // Image and Document
                 else if (ele => ele.assetTypeId === '8' || ele.assetTypeId === '11') {
                     const node = await getMediaSourceFile(ele, alreadySyncedContents, folderId);
-                   // console.log('ele-->', ele);
-
                     const url = ele.unauthenticatedUrl ? `${ele.unauthenticatedUrl}` : ele.url ? `${ele.url}` : null;
 
                     if (typeof node == "string") {
