@@ -531,11 +531,14 @@ function getAssestsWithProperNaming(result) {
                     const assetTypeId = mcNodes ? mcNodes.assetTypeId : '';
                     let objItem;
 
+                    const name = value.name || value.title;
+                    const referenceId = `${value.referenceId}${name}` || `${value.contentId}${name}`
+
                     if (value.nodeType === 'MediaSource') { // MediaSource - cms_image and cms_document
                         value.assetTypeId = assetTypeId;
-                        objItem = { ...value, publishedDate, title, type, status: 'Queued', response: '' };
+                        objItem = { ...value, referenceId, publishedDate, title, type, status: 'Queued', response: '' };
                     } else if (value.nodeType === 'Media') { // Image Node
-                        objItem = { ...value, assetTypeId: assetTypeId, name: `${namePrefix}-${nameSuffix}-${publishedDate}`, title, type, status: 'Queued', response: '' };
+                        objItem = { ...value, referenceId,  assetTypeId: assetTypeId, name: `${namePrefix}-${nameSuffix}-${publishedDate}`, title, type, status: 'Queued', response: '' };
                     } else {
                         objItem = { assetTypeId: assetTypeId, nodeType: value.nodeType, name: `${namePrefix}-${nameSuffix}-${publishedDate}`, value: value.value, title, type, status: 'Queued', response: '' };
                     }
