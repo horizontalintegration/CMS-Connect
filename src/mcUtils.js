@@ -481,6 +481,9 @@ function updateAlreadySyncMediaStatus(skippedItems) {
                     } else if (jobEle.fileName && ele.fileName && jobEle.fileName == ele.fileName) {
                         response = serverResponse;
                         status = serverStatus;
+                    } else if (jobEle.title && ele.fileName && jobEle.title == ele.fileName) {
+                        response = serverResponse;
+                        status = serverStatus;
                     } else if (jobEle.referenceId && ele.referenceId && jobEle.referenceId == ele.referenceId) {
                         response = serverResponse;
                         status = serverStatus;
