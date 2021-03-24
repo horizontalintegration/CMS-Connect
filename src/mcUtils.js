@@ -638,6 +638,7 @@ async function startUploadProcess(workQueue) {
 
 async function createJobQueue(serviceResults, workQueue, cmsAuthResults, org, contentTypeNodes, channelId, folderId, channelName, skippedItems, managedContentNodeTypes, managedContentTypeLabel, Id) {
     try {
+        console.log('skippedItems-->', skippedItems);
         const alreadySyncedContents = await getPresentMCAssets(folderId);
 
         if (serviceResults && serviceResults.length) {
@@ -660,6 +661,17 @@ async function createJobQueue(serviceResults, workQueue, cmsAuthResults, org, co
                 // Image and Document
                 else if (ele => ele.assetTypeId === '8' || ele.assetTypeId === '11') {
                     const node = await getMediaSourceFile(ele, alreadySyncedContents, folderId);
+                    console.log('ele-->', ele);
+
+                    const url = node.unauthenticatedUrl ? `${node.unauthenticatedUrl}` : node.url ? `${node.url}` : null;
+
+
+                    const urlFileName = node.fileName || url.substring(url.lastIndexOf('/') + 1);
+                    const ext = urlFileName ? path.parse(urlFileName).ext : null;
+                    
+                    let fileName = node.fileName ? node.fileName : `urlFileName`;
+
+                    console.log('fileName-->', fileName);
 
                     if (typeof node == "string") {
                         const referenceId = ele.referenceId || null;
