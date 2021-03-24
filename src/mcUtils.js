@@ -661,13 +661,15 @@ async function createJobQueue(serviceResults, workQueue, cmsAuthResults, org, co
                 // Image and Document
                 else if (ele => ele.assetTypeId === '8' || ele.assetTypeId === '11') {
                     const node = await getMediaSourceFile(ele, alreadySyncedContents, folderId);
-                    console.log('ele-->', ele);
+                   // console.log('ele-->', ele);
 
                     const url = ele.unauthenticatedUrl ? `${ele.unauthenticatedUrl}` : ele.url ? `${ele.url}` : null;
 
 
                     const urlFileName = ele.fileName || url.substring(url.lastIndexOf('/') + 1);
-                    
+
+                    const ext = urlFileName ? path.parse(urlFileName).ext : null;
+
                     const publishedDate = ele.publishedDate ? ele.publishedDate.replace(/[^a-zA-Z0-9]/g, "") : '';
 
                     let fileName = ele.fileName ? ele.fileName : `${path.parse(urlFileName).base}`;
@@ -680,8 +682,8 @@ async function createJobQueue(serviceResults, workQueue, cmsAuthResults, org, co
 
                     if (typeof node == "string") {
                         const referenceId = ele.referenceId || null;
-                        let name = ele.name;
-                        skippedItems = ele.assetTypeId === '8' ? [...skippedItems, { referenceId, name, fileName: ele.fileName }] : [...skippedItems, { referenceId, name }];
+                        let name = ele.name  || ele.title;
+                        skippedItems = ele.assetTypeId === '8' ? [...skippedItems, { referenceId, name, fileName: ele.fileName || `${fileName}.${ext}` }] : [...skippedItems, { referenceId, name }];
                     } else if (node) {
                         jobItems = [...jobItems, node];
                     }
