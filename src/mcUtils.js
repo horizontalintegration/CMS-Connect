@@ -466,10 +466,9 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
 function updateAlreadySyncMediaStatus(skippedItems) {
     try {
         console.log('skippedItems--->', skippedItems);
-        
+        console.log('jobWorkQueueList--->', jobWorkQueueList[0].items);
         skippedItems.forEach(ele => {
             jobWorkQueueList = jobWorkQueueList.map(job => {
-                console.log('jobWorkQueueList--->', job.items);
 
                 const serverResponse = `Failed with Error code: 118039 - Error message: Asset names within a category and asset type must be unique.`;
                 const serverStatus = 'Already Uploaded';
