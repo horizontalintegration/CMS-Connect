@@ -275,10 +275,10 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
         const ext = urlFileName ? path.parse(urlFileName).ext : null;
         //const publishedDate = node.publishedDate ? node.publishedDate.replace(/[^a-zA-Z0-9]/g, "") : '';
         const publishedDate = node.publishedDate ? node.publishedDate : '';
-        
+
         let fileName = node.fileName ? node.fileName : `${path.parse(urlFileName).base}`;
         //fileName = node.name ? node.name.replace(/[^a-zA-Z0-9]/g, "") : `${path.parse(fileName).name.replace(/[^a-zA-Z0-9]/g, "")}${publishedDate}`;
-        fileName = node.name ? node.name : `${path.parse(fileName).name}${publishedDate}`;
+        fileName = node.name ? node.name : `${path.parse(fileName).name}-${publishedDate}`;
         fileName = `${ASSETNAME_PREFIX}${fileName}`;
 
         const notInMC = await verfiyFileNameMCFolder(folderId, fileName + ext, alreadySyncedContents);
