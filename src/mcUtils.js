@@ -465,6 +465,7 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
 
 function updateAlreadySyncMediaStatus(skippedItems) {
     try {
+        console.log('skippedItems--->', skippedItems);
         skippedItems.forEach(ele => {
             jobWorkQueueList = jobWorkQueueList.map(job => {
 
