@@ -472,16 +472,17 @@ function updateAlreadySyncMediaStatus(skippedItems) {
                 items = [...job.items].map(jobEle => {
                     let response = jobEle.response;
                     let status = jobEle.status;
-                    if (jobEle.name && ele.name && jobEle.name == ele.name) {
+
+                    if (jobEle.referenceId && ele.referenceId && jobEle.referenceId == ele.referenceId) {
+                        response = serverResponse;
+                        status = serverStatus;
+                    }else if (jobEle.name && ele.name && jobEle.name == ele.name) {
                         response = serverResponse;
                         status = serverStatus;
                     } else if (jobEle.fileName && ele.fileName && jobEle.fileName == ele.fileName) {
                         response = serverResponse;
                         status = serverStatus;
                     } else if (jobEle.title && ele.name && jobEle.title == ele.name) {
-                        response = serverResponse;
-                        status = serverStatus;
-                    } else if (jobEle.referenceId && ele.referenceId && jobEle.referenceId == ele.referenceId) {
                         response = serverResponse;
                         status = serverStatus;
                     }
@@ -565,10 +566,10 @@ function updateJobProgress(jobId, serverResponse, name, serverStatus, referenceI
             items = [...ele.items].map(item => {
                 let response = item.response;
                 let status = item.status;
-                if (name && (`${ASSETNAME_PREFIX}${item.name}` === name || item.name === name) && !item.response) {
+                if (referenceId && item.referenceId === referenceId && !item.response) {
                     response = serverResponse;
                     status = serverStatus;
-                } else if (referenceId && item.referenceId === referenceId && !item.response) {
+                }else if (name && (`${ASSETNAME_PREFIX}${item.name}` === name || item.name === name) && !item.response) {
                     response = serverResponse;
                     status = serverStatus;
                 }
