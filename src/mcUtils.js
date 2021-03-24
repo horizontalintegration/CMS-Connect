@@ -228,6 +228,7 @@ function getAssestsWithProperNaming(result) {
             const contentNodes = item.contentNodes; // nodes 
             const namePrefix = nameKey && contentNodes[nameKey] ? contentNodes[nameKey].value : '';
             const publishedDate = item.publishedDate ? item.publishedDate : '';
+            const contentKey = item.contentKey ? item.contentKey : '';
 
             //Filter node.nodeName except node with assetTypeId = 0
             let nodes = [...managedContentNodeTypes].filter(node => node.assetTypeId !== '0').map(node => node.nodeName);
@@ -242,14 +243,15 @@ function getAssestsWithProperNaming(result) {
 
                     const name = value.name ? value.name : title ? title : '';
                     const referenceId = value.referenceId ? `${value.referenceId}${name}` : `${contentId}${name}`
+                    const customerKey = contentKey + nameSuffix + publishedDate;
 
                     if (value.nodeType === 'MediaSource') { // MediaSource - cms_image and cms_document
                         value.assetTypeId = assetTypeId;
-                        objItem = { ...value, referenceId, publishedDate, title, type, status: 'Queued', response: '' };
+                        objItem = { ...value, customerKey, referenceId, publishedDate, title, type, status: 'Queued', response: '' };
                     } else if (value.nodeType === 'Media') { // Image Node
-                        objItem = { ...value, referenceId, assetTypeId, name: `${namePrefix}-${nameSuffix}-${publishedDate}`, title, type, status: 'Queued', response: '' };
+                        objItem = { ...value, customerKey, referenceId, assetTypeId, name: `${namePrefix}-${nameSuffix}-${publishedDate}`, title, type, status: 'Queued', response: '' };
                     } else {
-                        objItem = { assetTypeId, nodeType: value.nodeType, name: `${namePrefix}-${nameSuffix}-${publishedDate}`, value: value.value, title, type, status: 'Queued', response: '' };
+                        objItem = { customerKey, assetTypeId, nodeType: value.nodeType, name: `${namePrefix}-${nameSuffix}-${publishedDate}`, value: value.value, title, type, status: 'Queued', response: '' };
                     }
                     finalArray = [...finalArray, objItem];
                 }
@@ -260,6 +262,7 @@ function getAssestsWithProperNaming(result) {
         console.log('Error:', error);
     }
 
+    console.log('finalArray:', finalArray);
     return finalArray;
 }
 
@@ -386,6 +389,7 @@ async function startUploadProcess(workQueue) {
                 items.map(async (ele) => {
                     if (ele.assetTypeId === '196' || ele.assetTypeId === '197') { // 196 - 'Text' & 'MultilineText' and 197 - 'RichText'
                         await moveTextToMC(
+                            ele.customerKey,
                             ele.name,
                             decode(ele.value),
                             ele.assetTypeId,
@@ -397,6 +401,7 @@ async function startUploadProcess(workQueue) {
                         );
                     } else if (ele.assetTypeId == '8') { //image
                         await moveImageToMC(
+                            ele.customerKey,
                             ele,
                             folderId,
                             mcAuthResults,
@@ -406,6 +411,7 @@ async function startUploadProcess(workQueue) {
                         );
                     } else if (ele.assetTypeId === '11') { //document
                         await moveDocumentToMC(
+                            ele.customerKey,
                             ele,
                             folderId,
                             mcAuthResults,
@@ -445,7 +451,7 @@ async function getMcAuth() {
 
 // Move content to marketing cloud
 // Method is use for move rich text, html content and normal text.
-async function moveTextToMC(name, value, assetTypeId, folderId, mcAuthResults, jobId, referenceId, org) {
+async function moveTextToMC(customerKey, name, value, assetTypeId, folderId, mcAuthResults, jobId, referenceId, org) {
     name = `${ASSETNAME_PREFIX}${name}`;
     try {
         let textAssetBody = {
@@ -457,6 +463,7 @@ async function moveTextToMC(name, value, assetTypeId, folderId, mcAuthResults, j
             category: {
                 id: folderId
             },
+            customerKey
         };
         // Create Marketing Cloud Block Asset
         await createMCAsset(mcAuthResults.access_token, textAssetBody, jobId, referenceId, name, false, null, org);
@@ -477,7 +484,7 @@ async function moveTextToMC(name, value, assetTypeId, folderId, mcAuthResults, j
 }
 
 // Method is use for move base 64 images to marketing cloud
-async function moveImageToMC(imageNode, folderId, mcAuthResults, cmsAuthResults, jobId, org) {
+async function moveImageToMC(customerKey, imageNode, folderId, mcAuthResults, cmsAuthResults, jobId, org) {
     return new Promise(async (resolve, reject) => {
         const imageUrl = imageNode.unauthenticatedUrl ? imageNode.unauthenticatedUrl : imageNode.url;
         const fileName = imageNode.fileName || null;
@@ -505,6 +512,7 @@ async function moveImageToMC(imageNode, folderId, mcAuthResults, cmsAuthResults,
                     category: {
                         id: folderId
                     },
+                    customerKey
                 };
 
                 // Marketing Cloud Regex for file fullName i.e. Developer name
@@ -550,7 +558,7 @@ async function moveImageToMC(imageNode, folderId, mcAuthResults, cmsAuthResults,
 }
 
 // Method is use for move base 64 document to marketing cloud
-async function moveDocumentToMC(documentNode, folderId, mcAuthResults, cmsAuthResults, jobId, org) {
+async function moveDocumentToMC(customerKey, documentNode, folderId, mcAuthResults, cmsAuthResults, jobId, org) {
     return new Promise(async (resolve, reject) => {
         const docUrl = documentNode.unauthenticatedUrl ? documentNode.unauthenticatedUrl : documentNode.url;
         const fileName = documentNode.fileName || null;
@@ -578,6 +586,7 @@ async function moveDocumentToMC(documentNode, folderId, mcAuthResults, cmsAuthRe
                     category: {
                         id: folderId
                     },
+                    customerKey
                 };
 
                 // Marketing Cloud Regex for file fullName i.e. Developer name
@@ -642,7 +651,7 @@ async function createMCAsset(access_token, assetBody, jobId, referenceId, name, 
                         const response = body.id ? `Uploaded with Asset Id: ${body.id}` : `Failed with Error code: ${errorCode} - Error message: ${msg}`;
                         const uploadStatus = body.id ? 'Uploaded' : 'Failed';
 
-                        console.log(body.id ? `${assetBody.name} uploaded with status code: ${res.statusCode} - Asset Id: ${body.id}` : `${assetBody.name} failed with status code: ${res.statusCode} - Error code: ${errorCode} - Error message: ${msg}`);
+                        console.log(body.id ? `${assetBody.customerKey} - ${assetBody.name} uploaded with status code: ${res.statusCode} - Asset Id: ${body.id}` : `${assetBody.name} failed with status code: ${res.statusCode} - Error code: ${errorCode} - Error message: ${msg}`);
                         if (errorCode) {
                             failedItemsCount = failedItemsCount + 1;
                         }
