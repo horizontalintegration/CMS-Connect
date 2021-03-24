@@ -663,13 +663,18 @@ async function createJobQueue(serviceResults, workQueue, cmsAuthResults, org, co
                     const node = await getMediaSourceFile(ele, alreadySyncedContents, folderId);
                     console.log('ele-->', ele);
 
-                    const url = node.unauthenticatedUrl ? `${node.unauthenticatedUrl}` : node.url ? `${node.url}` : null;
+                    const url = ele.unauthenticatedUrl ? `${ele.unauthenticatedUrl}` : ele.url ? `${ele.url}` : null;
 
 
-                    const urlFileName = node.fileName || url.substring(url.lastIndexOf('/') + 1);
-                    const ext = urlFileName ? path.parse(urlFileName).ext : null;
+                    const urlFileName = ele.fileName || url.substring(url.lastIndexOf('/') + 1);
                     
-                    let fileName = node.fileName ? node.fileName : `urlFileName`;
+                    const publishedDate = ele.publishedDate ? ele.publishedDate.replace(/[^a-zA-Z0-9]/g, "") : '';
+
+                    let fileName = ele.fileName ? ele.fileName : `${path.parse(urlFileName).base}`;
+
+                    fileName = ele.name ? ele.name.replace(/[^a-zA-Z0-9]/g, "") : `${path.parse(fileName).name.replace(/[^a-zA-Z0-9]/g, "")}${publishedDate}`;
+
+                    fileName = `${ASSETNAME_PREFIX}${fileName}`;
 
                     console.log('fileName-->', fileName);
 
