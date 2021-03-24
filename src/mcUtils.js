@@ -3,6 +3,7 @@ var request = require('request');
 let Queue = require('bull');
 const path = require('path');
 const decode = require('unescape');
+const hasha = require("hasha");
 const { getImageAssetTypeId, getDocumentAssetTypeId, downloadBase64FromURL, validateUrl, updateSfRecord } = require('./utils/utils.js');
 const { MC_ASSETS_API_PATH, MS_AUTH_PATH, MC_CONTENT_CATEGORIES_API_PATH, REDIS_URL, MC_CONTENT_QUERY_API_PATH } = require('./constants');
 
@@ -243,7 +244,7 @@ function getAssestsWithProperNaming(result) {
 
                     const name = value.name ? value.name : title ? title : '';
                     const referenceId = value.referenceId ? `${value.referenceId}${name}` : `${contentId}${name}`
-                    const customerKey = contentKey + nameSuffix + publishedDate;
+                    const customerKey = hasha(contentKey + nameSuffix + publishedDate).substring(0, 35);
 
                     if (value.nodeType === 'MediaSource') { // MediaSource - cms_image and cms_document
                         value.assetTypeId = assetTypeId;
@@ -288,6 +289,7 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
 
         if (notInMC) {
             return {
+                customerKey,
                 assetTypeId: node.assetTypeId,
                 title: node.title,
                 type: node.type,
@@ -651,7 +653,9 @@ async function createMCAsset(access_token, assetBody, jobId, referenceId, name, 
                         const response = body.id ? `Uploaded with Asset Id: ${body.id}` : `Failed with Error code: ${errorCode} - Error message: ${msg}`;
                         const uploadStatus = body.id ? 'Uploaded' : 'Failed';
 
-                        console.log(body.id ? `${assetBody.customerKey} - ${assetBody.name} uploaded with status code: ${res.statusCode} - Asset Id: ${body.id}` : `${assetBody.name} failed with status code: ${res.statusCode} - Error code: ${errorCode} - Error message: ${msg}`);
+                        console.log(body.id 
+                            ? `${assetBody.customerKey} - ${assetBody.name} uploaded with status code: ${res.statusCode} - Asset Id: ${body.id}` 
+                            : `${assetBody.customerKey} - ${assetBody.name} failed with status code: ${res.statusCode} - Error code: ${errorCode} - Error message: ${msg}`);
                         if (errorCode) {
                             failedItemsCount = failedItemsCount + 1;
                         }
