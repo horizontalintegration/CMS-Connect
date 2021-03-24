@@ -666,25 +666,10 @@ async function createJobQueue(serviceResults, workQueue, cmsAuthResults, org, co
 
                     const url = ele.unauthenticatedUrl ? `${ele.unauthenticatedUrl}` : ele.url ? `${ele.url}` : null;
 
-
-                    const urlFileName = ele.fileName || url.substring(url.lastIndexOf('/') + 1);
-
-                    const ext = urlFileName ? path.parse(urlFileName).ext : null;
-
-                    const publishedDate = ele.publishedDate ? ele.publishedDate.replace(/[^a-zA-Z0-9]/g, "") : '';
-
-                    let fileName = ele.fileName ? ele.fileName : `${path.parse(urlFileName).base}`;
-
-                    fileName = ele.name ? ele.name.replace(/[^a-zA-Z0-9]/g, "") : `${path.parse(fileName).name.replace(/[^a-zA-Z0-9]/g, "")}${publishedDate}`;
-
-                    fileName = `${ASSETNAME_PREFIX}${fileName}`;
-
-                    console.log('fileName-->', fileName);
-
                     if (typeof node == "string") {
                         const referenceId = ele.referenceId || null;
                         let name = ele.name  || ele.title;
-                        skippedItems = ele.assetTypeId === '8' ? [...skippedItems, { referenceId, name, fileName: ele.fileName || `${fileName}.${ext}` }] : [...skippedItems, { referenceId, name }];
+                        skippedItems = ele.assetTypeId === '8' ? [...skippedItems, { referenceId, name, fileName: ele.fileName || `${url.substring(url.lastIndexOf('/') + 1)}` }] : [...skippedItems, { referenceId, name }];
                     } else if (node) {
                         jobItems = [...jobItems, node];
                     }
