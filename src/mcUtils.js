@@ -377,6 +377,7 @@ async function createMCAsset(access_token, assetBody, jobId, referenceId, name, 
         },
             async (error, res, body) => {
                 totalUploadItems = totalUploadItems - 1;
+                console.log('error--->', error);
                 if (error) {
                     // Update job status    
                     failedItemsCount = failedItemsCount + 1;
