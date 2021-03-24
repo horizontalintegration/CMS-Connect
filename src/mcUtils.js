@@ -260,11 +260,11 @@ async function moveImageToMC(imageNode, folderId, mcAuthResults, cmsAuthResults,
                 };
 
                 // Marketing Cloud Regex for file fullName i.e. Developer name
-                let mcRegex = /^[a-z](?!\w*__)(?:\w*[^\W_])?$/i;
+               // let mcRegex = /^[a-z](?!\w*__)(?:\w*[^\W_])?$/i;
                 // Create Marketing Cloud Image Asset
-                if (mcRegex.test(fileName)) {
+                //if (mcRegex.test(fileName)) {
                     await createMCAsset(mcAuthResults.access_token, imageAssetBody, jobId, referenceId, name, true, fileName, org);
-                } else {
+                /*} else {
                     // Update file status in job queue
                     totalUploadItems = totalUploadItems - 1;
                     failedItemsCount = failedItemsCount + 1;
@@ -277,7 +277,7 @@ async function moveImageToMC(imageNode, folderId, mcAuthResults, cmsAuthResults,
                         updateJobProgress(jobId, response, name, uploadStatus, referenceId);
                     }
                     updateStatusToServer(org);
-                }
+                }*/
             } else {
                 console.log('Image url not available:', fileName + imageExt)
             }
@@ -333,18 +333,18 @@ async function moveDocumentToMC(documentNode, folderId, mcAuthResults, cmsAuthRe
                 };
 
                 // Marketing Cloud Regex for file fullName i.e. Developer name
-                let mcRegex = /^[a-z](?!\w*__)(?:\w*[^\W_])?$/i;
+                // let mcRegex = /^[a-z](?!\w*__)(?:\w*[^\W_])?$/i;
                 // Create Marketing Cloud Image Asset
-                if (mcRegex.test(fileName)) {
+                // if (mcRegex.test(fileName)) {
                     await createMCAsset(mcAuthResults.access_token, docAssetBody, jobId, referenceId, name, true, fileName, org);
-                } else {
+                /*} else {
                     const response = `FileProperties.fileName contains prohibited characters: ${fileName}`;
                     const uploadStatus = 'Failed';
                     // Update job status    
                     if (jobId && response) {
                         updateJobProgress(jobId, response, name, uploadStatus, referenceId);
                     }
-                }
+                }*/
             }
             resolve();
         } catch (error) {
