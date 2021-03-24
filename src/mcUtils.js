@@ -465,8 +465,8 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
 
 function updateAlreadySyncMediaStatus(skippedItems) {
     try {
-        console.log('skippedItems--->', skippedItems);
-        console.log('jobWorkQueueList--->', jobWorkQueueList[0].items);
+        console.log('updateAlreadySyncMediaStatus skippedItems--->', skippedItems);
+        console.log('updateAlreadySyncMediaStatus jobWorkQueueList--->', jobWorkQueueList[0].items);
         skippedItems.forEach(ele => {
             jobWorkQueueList = jobWorkQueueList.map(job => {
 
@@ -481,7 +481,7 @@ function updateAlreadySyncMediaStatus(skippedItems) {
                     } else if (jobEle.fileName && ele.fileName && jobEle.fileName == ele.fileName) {
                         response = serverResponse;
                         status = serverStatus;
-                    } else if (jobEle.title && ele.fileName && jobEle.title == ele.fileName) {
+                    } else if (jobEle.title && ele.name && jobEle.title == ele.name) {
                         response = serverResponse;
                         status = serverStatus;
                     } else if (jobEle.referenceId && ele.referenceId && jobEle.referenceId == ele.referenceId) {
@@ -513,6 +513,7 @@ function getAssestsWithProperNaming(result) {
         const nameKey = defaultNameNode ? defaultNameNode.nodeName : null;
 
         items.forEach(item => {
+            const contentId = item.managedContentId;
             const title = item.title;
             const type = item.type;
             const contentNodes = item.contentNodes; // nodes 
