@@ -289,7 +289,7 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
 
         if (notInMC) {
             return {
-                customerKey,
+                customerKey: node.customerKey,
                 assetTypeId: node.assetTypeId,
                 title: node.title,
                 type: node.type,
