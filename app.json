@@ -43,7 +43,7 @@
         "SF_API_VERSION": {
             "description": "Salesforce REST API Version.",
             "required": true,
-            "value": "50.0"
+            "value": "51.0"
         },
         "SF_CMS_CONNECTION_ID": {
             "description": "Salesforce CMS Connection Id.",

@@ -434,11 +434,13 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
 
         const urlFileName = node.fileName || url.substring(url.lastIndexOf('/') + 1);
         const ext = urlFileName ? path.parse(urlFileName).ext : null;
-        const publishedDate = node.publishedDate ? node.publishedDate.replace(/[^a-zA-Z0-9]/g, "") : '';
+        //const publishedDate = node.publishedDate ? node.publishedDate.replace(/[^a-zA-Z0-9]/g, "") : '';
+        const publishedDate = node.publishedDate ? node.publishedDate : '';
 
         let fileName = node.fileName ? node.fileName : `${path.parse(urlFileName).base}`;
 
-        fileName = node.name ? node.name.replace(/[^a-zA-Z0-9]/g, "") : `${path.parse(fileName).name.replace(/[^a-zA-Z0-9]/g, "")}${publishedDate}`;
+        //fileName = node.name ? node.name.replace(/[^a-zA-Z0-9]/g, "") : `${path.parse(fileName).name.replace(/[^a-zA-Z0-9]/g, "")}${publishedDate}`;
+        fileName = node.name ? node.name : `${path.parse(fileName).name}${publishedDate}`;
 
         fileName = `${ASSETNAME_PREFIX}${fileName}`;
 
@@ -536,9 +538,9 @@ function getAssestsWithProperNaming(result) {
                         value.assetTypeId = assetTypeId;
                         objItem = { ...value, referenceId, publishedDate, title, type, status: 'Queued', response: '' };
                     } else if (value.nodeType === 'Media') { // Image Node
-                        objItem = { ...value, referenceId,  assetTypeId: assetTypeId, name: `${namePrefix}-${nameSuffix}-${publishedDate}`, title, type, status: 'Queued', response: '' };
+                        objItem = { ...value, referenceId,  assetTypeId, name: `${namePrefix}-${nameSuffix}-${publishedDate}`, title, type, status: 'Queued', response: '' };
                     } else {
-                        objItem = { assetTypeId: assetTypeId, nodeType: value.nodeType, name: `${namePrefix}-${nameSuffix}-${publishedDate}`, value: value.value, title, type, status: 'Queued', response: '' };
+                        objItem = { assetTypeId, nodeType: value.nodeType, name: `${namePrefix}-${nameSuffix}-${publishedDate}`, value: value.value, title, type, status: 'Queued', response: '' };
                     }
                     finalArray = [...finalArray, objItem];
                 }
@@ -595,7 +597,7 @@ async function startUploadProcess(workQueue) {
             if (items) {
                 //Upload CMS content to Marketing Cloud
                 items.map(async (ele) => {
-                    if (ele.assetTypeId === '196' || ele.assetTypeId === '197') { // 196 - 'Text' &'MultilineText' and 197 - 'RichText'
+                    if (ele.assetTypeId === '196' || ele.assetTypeId === '197') { // 196 - 'Text' & 'MultilineText' and 197 - 'RichText'
                         await moveTextToMC(
                             ele.name,
                             decode(ele.value),
