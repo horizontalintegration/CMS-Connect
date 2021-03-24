@@ -531,7 +531,7 @@ function getAssestsWithProperNaming(result) {
                     const assetTypeId = mcNodes ? mcNodes.assetTypeId : '';
                     let objItem;
 
-                    const name = value.name ? value.name : value.title ? value.title : '';
+                    const name = value.name ? value.name : title ? title : '';
                     const referenceId = value.referenceId ? `${value.referenceId}${name}` : `${contentId}${name}`
 
                     if (value.nodeType === 'MediaSource') { // MediaSource - cms_image and cms_document
