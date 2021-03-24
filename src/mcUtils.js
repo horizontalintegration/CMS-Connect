@@ -395,7 +395,7 @@ async function createMCAsset(access_token, assetBody, jobId, referenceId, name, 
                         const response = body.id ? `Uploaded with Asset Id: ${body.id}` : `Failed with Error code: ${errorCode} - Error message: ${msg}`;
                         const uploadStatus = body.id ? 'Uploaded' : 'Failed';
 
-                        console.log(body.id ? `${assetBody.name} uploaded with status code: ${res.statusCode} - Asset Id: ${body.id}` : `${assetBody.name} failed with status code: ${res.statusCode} - Error code: ${errorCode} - Error message: ${msg}`);
+                        console.log(body.id ? `${name} - ${referenceId} - ${assetBody.name} uploaded with status code: ${res.statusCode} - Asset Id: ${body.id}` : `${assetBody.name} failed with status code: ${res.statusCode} - Error code: ${errorCode} - Error message: ${msg}`);
                         if (errorCode) {
                             failedItemsCount = failedItemsCount + 1;
                         }
@@ -549,6 +549,8 @@ function getAssestsWithProperNaming(result) {
 
 // Method is use to update progress in job queue for logs screen
 function updateJobProgress(jobId, serverResponse, name, serverStatus, referenceId) {
+    console.log('name-->', name);
+    console.log('referenceId-->', referenceId);
     jobWorkQueueList = [...jobWorkQueueList].map(ele => {
         let percents = ele.progress;
         let counter = ele.counter || 0;
