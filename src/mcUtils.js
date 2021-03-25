@@ -337,7 +337,7 @@ async function verfiyFileNameMCFolder(folderId, fileName, alreadySyncedContents)
  * @param {*} alreadySyncedContents 
  */
 async function verifyCustomerKeyInMCFolder(folderId, customerKey, alreadySyncedContents) {
-    console.log('verifyCustomerKeyInMCFolder-->', customerKey, alreadySyncedContents.items.length);
+    console.log('verifyCustomerKeyInMCFolder-->', customerKey, alreadySyncedContents.items);
     if (alreadySyncedContents && alreadySyncedContents.items && alreadySyncedContents.items.length) {
         const item = [...alreadySyncedContents.items].find(ele => ele.customerKey === customerKey);
         return item ? false : true;
