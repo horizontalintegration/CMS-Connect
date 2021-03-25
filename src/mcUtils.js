@@ -105,7 +105,7 @@ async function addProcessInQueue(workQueue, cmsAuthResults, org, contentTypeNode
  */
 async function createJobQueue(serviceResults, workQueue, cmsAuthResults, org, contentTypeNodes, channelId, folderId, channelName, skippedItems, managedContentNodeTypes, managedContentTypeLabel, Id) {
     try {
-        const alreadySyncedContents = await getPresentMCAssets(folderId);
+        const alreadySyncedContents = await getPresentMCAssets(folderId); // MC content
 
         if (serviceResults && serviceResults.length) {
             const result = { items: serviceResults, managedContentNodeTypes };
@@ -116,14 +116,16 @@ async function createJobQueue(serviceResults, workQueue, cmsAuthResults, org, co
             await Promise.all([...items].map(async (ele) => {
                 // Content
                 if (ele.assetTypeId === '196' || ele.assetTypeId === '197') {
-                    const notInMC = await verfiyFileNameMCFolder(folderId, `${ASSETNAME_PREFIX}${ele.name}`, alreadySyncedContents);
+                    const notInMC = await verifyCustomerKeyInMCFolder(folderId, ele.customerKey, alreadySyncedContents);
                     if (notInMC) {
                         jobItems = [...jobItems, ele];
                     } else {
-                        const referenceId = ele.referenceId || null;
-                        skippedItems = [...skippedItems, { referenceId, name: ele.name }];
+                        const referenceId = ele.referenceId || null; // Need to remove
+                        const customerKey = ele.customerKey || null;
+                        skippedItems = [...skippedItems, { referenceId, customerKey, name: ele.name }];
                     }
                 }
+
                 // Image and Document
                 else if (ele => ele.assetTypeId === '8' || ele.assetTypeId === '11') {
                     const node = await getMediaSourceFile(ele, alreadySyncedContents, folderId);
@@ -131,8 +133,9 @@ async function createJobQueue(serviceResults, workQueue, cmsAuthResults, org, co
 
                     if (typeof node == "string") {
                         const referenceId = ele.referenceId || null;
+                        const customerKey = ele.customerKey || null;
                         let name = ele.name || ele.title;
-                        skippedItems = ele.assetTypeId === '8' ? [...skippedItems, { referenceId, name, fileName: ele.fileName || `${url.substring(url.lastIndexOf('/') + 1)}` }] : [...skippedItems, { referenceId, name }];
+                        skippedItems = ele.assetTypeId === '8' ? [...skippedItems, { customerKey, referenceId, name, fileName: ele.fileName || `${url.substring(url.lastIndexOf('/') + 1)}` }] : [...skippedItems, { referenceId, name }];
                     } else if (node) {
                         jobItems = [...jobItems, node];
                     }
@@ -190,9 +193,10 @@ async function getPresentMCAssets(folderId) {
         },
         "fields":
             [
-                "id",
-                "assetType",
-                "name"
+                "id", // Need to remove
+                "assetType",  // Need to remove
+                "name",  // Need to remove
+                "customerKey"
             ]
     });
     return await fetch(serviceUrl, {
@@ -219,15 +223,15 @@ function getAssestsWithProperNaming(result) {
         const { managedContentNodeTypes, items } = result;
         // Get name prefix
 
-        const defaultNameNode = managedContentNodeTypes.find(mcNode => mcNode.assetTypeId == 0);
-        const nameKey = defaultNameNode ? defaultNameNode.nodeName : null;
+        const defaultNameNode = managedContentNodeTypes.find(mcNode => mcNode.assetTypeId == 0); // Need to remove
+        const nameKey = defaultNameNode ? defaultNameNode.nodeName : null; // Need to remove
 
         items.forEach(item => {
             const contentId = item.managedContentId;
             const title = item.title;
-            const type = item.type;
+            const type = item.type; // Need to remove
             const contentNodes = item.contentNodes; // nodes 
-            const namePrefix = nameKey && contentNodes[nameKey] ? contentNodes[nameKey].value : '';
+            const namePrefix = nameKey && contentNodes[nameKey] ? contentNodes[nameKey].value : ''; // Need to remove (will be replace by title) 
             const publishedDate = item.publishedDate ? item.publishedDate : '';
             const contentKey = item.contentKey ? item.contentKey : '';
 
@@ -242,9 +246,9 @@ function getAssestsWithProperNaming(result) {
                     const assetTypeId = mcNodes ? mcNodes.assetTypeId : '';
                     let objItem;
 
-                    const name = value.name ? value.name : title ? title : '';
-                    const referenceId = value.referenceId ? `${value.referenceId}${name}` : `${contentId}${name}`
-                    const customerKey = hasha(contentKey + nameSuffix + publishedDate).substring(0, 35);
+                    const name = value.name ? value.name : title ? title : ''; // Need to remove
+                    const referenceId = value.referenceId ? `${value.referenceId}${name}` : `${contentId}${name}`; // Need to remove
+                    const customerKey = hasha(contentKey + nameSuffix + publishedDate).substring(0, 35); 
 
                     if (value.nodeType === 'MediaSource') { // MediaSource - cms_image and cms_document
                         value.assetTypeId = assetTypeId;
@@ -273,6 +277,12 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
 
     if (url) {
 
+       
+
+        const notInMC = await verifyCustomerKeyInMCFolder(folderId, node.customerKey, alreadySyncedContents);
+
+
+
         const urlFileName = node.fileName || url.substring(url.lastIndexOf('/') + 1);
         const ext = urlFileName ? path.parse(urlFileName).ext : null;
         //const publishedDate = node.publishedDate ? node.publishedDate.replace(/[^a-zA-Z0-9]/g, "") : '';
@@ -282,8 +292,6 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
         //fileName = node.name ? node.name.replace(/[^a-zA-Z0-9]/g, "") : `${path.parse(fileName).name.replace(/[^a-zA-Z0-9]/g, "")}${publishedDate}`;
         fileName = node.name ? node.name : `${path.parse(fileName).name}-${publishedDate}`;
         fileName = `${ASSETNAME_PREFIX}${fileName}`;
-
-        const notInMC = await verfiyFileNameMCFolder(folderId, fileName + ext, alreadySyncedContents);
 
         if (notInMC) {
             return {
@@ -317,6 +325,23 @@ async function verfiyFileNameMCFolder(folderId, fileName, alreadySyncedContents)
         return item ? false : true;
     } else {
         const result = await checkFileInMc(folderId, fileName);
+        return result && result.items && result.items.length ? false : true;
+    }
+}
+
+
+/**
+ * Method check is given file already sync or not in marketing cloud
+ * @param {*} folderId 
+ * @param {*} customerKey 
+ * @param {*} alreadySyncedContents 
+ */
+async function verifyCustomerKeyInMCFolder(folderId, customerKey, alreadySyncedContents) {
+    if (alreadySyncedContents && alreadySyncedContents.items && alreadySyncedContents.items.length) {
+        const item = [...alreadySyncedContents.items].find(ele => ele.customerKey === customerKey);
+        return item ? false : true;
+    } else {
+        const result = await checkCustomerKeyInMc(folderId, customerKey);
         return result && result.items && result.items.length ? false : true;
     }
 }
@@ -357,6 +382,62 @@ async function checkFileInMc(folderId, fileName) {
                 "id",
                 "assetType",
                 "name"
+            ]
+    });
+
+    return await fetch(serviceUrl, {
+        method: 'POST',
+        body,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${mcAuthResults.access_token}`
+        },
+    })
+        .then(res => res.json())
+        .catch((err) => {
+            console.log('Error:', err);
+        });
+}
+
+
+
+/**
+ * method use for check is file is already avalibale or not in marketing cloud folder
+ * @param {*} folderId 
+ * @param {*} fileName 
+ */
+async function checkCustomerKeyInMc(folderId, customerKey) {
+    const mcAuthResults = await getMcAuth();
+    const serviceUrl = `${validateUrl(MC_REST_BASE_URI)}${MC_CONTENT_QUERY_API_PATH}`;
+
+    const body = JSON.stringify({
+        "page":
+        {
+            "pageSize": 1 //fixed
+        },
+
+        "query":
+        {
+            "leftOperand":
+            {
+                "property": "category.id",
+                "simpleOperator": "equal",
+                "value": folderId // folderid
+            },
+            "logicalOperator": "AND",
+            "rightOperand":
+            {
+                "property": "customerKey",
+                "simpleOperator": "like",
+                "value": customerKey
+            }
+        },
+        "fields":
+            [
+                "id",
+                "assetType",
+                "name",
+                "customerKey"
             ]
     });
 
@@ -466,7 +547,7 @@ async function moveTextToMC(customerKey, name, value, assetTypeId, folderId, mcA
             customerKey
         };
         // Create Marketing Cloud Block Asset
-        await createMCAsset(mcAuthResults.access_token, textAssetBody, jobId, referenceId, name, false, null, org);
+        await createMCAsset(mcAuthResults.access_token, textAssetBody, jobId, referenceId, name, false, null, org, customerKey);
     } catch (error) {
         console.log('Upload error:', error);
         // Update file status in job queue
@@ -477,7 +558,7 @@ async function moveTextToMC(customerKey, name, value, assetTypeId, folderId, mcA
         const uploadStatus = 'Failed';
         // Update job status    
         if (jobId && response) {
-            updateJobProgress(jobId, response, name, uploadStatus, referenceId);
+            updateJobProgress(jobId, response, name, uploadStatus, referenceId, customerKey);
         }
         updateStatusToServer(org);
     }
@@ -515,25 +596,9 @@ async function moveImageToMC(customerKey, imageNode, folderId, mcAuthResults, cm
                     customerKey
                 };
 
-                // Marketing Cloud Regex for file fullName i.e. Developer name
-                // let mcRegex = /^[a-z](?!\w*__)(?:\w*[^\W_])?$/i;
-                // Create Marketing Cloud Image Asset
-                //if (mcRegex.test(fileName)) {
-                await createMCAsset(mcAuthResults.access_token, imageAssetBody, jobId, referenceId, name, true, fileName, org);
-                /*} else {
-                    // Update file status in job queue
-                    totalUploadItems = totalUploadItems - 1;
-                    failedItemsCount = failedItemsCount + 1;
-
-                    const response = `FileProperties.fileName contains prohibited characters: ${fileName}`;
-                    const uploadStatus = 'Failed';
-                    console.log(response);
-                    // Update job status    
-                    if (jobId && response) {
-                        updateJobProgress(jobId, response, name, uploadStatus, referenceId);
-                    }
-                    updateStatusToServer(org);
-                }*/
+                
+                await createMCAsset(mcAuthResults.access_token, imageAssetBody, jobId, referenceId, name, true, fileName, org, customerKey);
+               
             } else {
                 console.log('Image url not available:', fileName + imageExt)
             }
@@ -549,7 +614,7 @@ async function moveImageToMC(customerKey, imageNode, folderId, mcAuthResults, cm
             const uploadStatus = 'Failed';
             // Update job status    
             if (jobId && response) {
-                updateJobProgress(jobId, response, name, uploadStatus, referenceId);
+                updateJobProgress(jobId, response, name, uploadStatus, referenceId, customerKey);
             }
 
             updateStatusToServer(org);
@@ -589,19 +654,8 @@ async function moveDocumentToMC(customerKey, documentNode, folderId, mcAuthResul
                     customerKey
                 };
 
-                // Marketing Cloud Regex for file fullName i.e. Developer name
-                // let mcRegex = /^[a-z](?!\w*__)(?:\w*[^\W_])?$/i;
-                // Create Marketing Cloud Image Asset
-                // if (mcRegex.test(fileName)) {
-                await createMCAsset(mcAuthResults.access_token, docAssetBody, jobId, referenceId, name, true, fileName, org);
-                /*} else {
-                    const response = `FileProperties.fileName contains prohibited characters: ${fileName}`;
-                    const uploadStatus = 'Failed';
-                    // Update job status    
-                    if (jobId && response) {
-                        updateJobProgress(jobId, response, name, uploadStatus, referenceId);
-                    }
-                }*/
+                await createMCAsset(mcAuthResults.access_token, docAssetBody, jobId, referenceId, name, true, fileName, org, customerKey);
+                
             }
             resolve();
         } catch (error) {
@@ -616,7 +670,7 @@ async function moveDocumentToMC(customerKey, documentNode, folderId, mcAuthResul
 
             // Update job status    
             if (jobId && response) {
-                updateJobProgress(jobId, response, name, uploadStatus, referenceId);
+                updateJobProgress(jobId, response, name, uploadStatus, referenceId, customerKey);
             }
             updateStatusToServer(org);
         }
@@ -624,7 +678,7 @@ async function moveDocumentToMC(customerKey, documentNode, folderId, mcAuthResul
 }
 
 // Method is use for send conent to marketing cloud
-async function createMCAsset(access_token, assetBody, jobId, referenceId, name, isMedia, fileName, org) {
+async function createMCAsset(access_token, assetBody, jobId, referenceId, name, isMedia, fileName, org, customerKey) {
     return new Promise((resolve, reject) => {
         request.post(validateUrl(MC_REST_BASE_URI) + MC_ASSETS_API_PATH, {
             headers: {
@@ -640,7 +694,7 @@ async function createMCAsset(access_token, assetBody, jobId, referenceId, name, 
                     const response = `Error for:${assetBody.name} ${error}`;
                     const uploadStatus = 'Failed';
                     if (jobId && response) {
-                        updateJobProgress(jobId, response, name, uploadStatus, referenceId);
+                        updateJobProgress(jobId, response, name, uploadStatus, referenceId, customerKey);
                     }
                     updateStatusToServer(org);
                     reject(error);
@@ -659,7 +713,7 @@ async function createMCAsset(access_token, assetBody, jobId, referenceId, name, 
                         }
                         // Update job status    
                         if (jobId && response) {
-                            updateJobProgress(jobId, response, name, uploadStatus, referenceId);
+                            updateJobProgress(jobId, response, name, uploadStatus, referenceId, customerKey);
                         }
                         updateStatusToServer(org);
                     } catch (err) {
@@ -673,7 +727,7 @@ async function createMCAsset(access_token, assetBody, jobId, referenceId, name, 
 }
 
 // Method is use to update progress in job queue for logs screen
-function updateJobProgress(jobId, serverResponse, name, serverStatus, referenceId) {
+function updateJobProgress(jobId, serverResponse, name, serverStatus, referenceId, customerKey) {
     jobWorkQueueList = [...jobWorkQueueList].map(ele => {
         let percents = ele.progress;
         let counter = ele.counter || 0;
@@ -686,10 +740,16 @@ function updateJobProgress(jobId, serverResponse, name, serverStatus, referenceI
             items = [...ele.items].map(item => {
                 let response = item.response;
                 let status = item.status;
-                if (referenceId && item.referenceId === referenceId && !item.response) {
+                if (customerKey && item.customerKey === customerKey && !item.response) {
+                    console.log('updateJobProgress customerKey')
                     response = serverResponse;
                     status = serverStatus;
-                } else if (name && (`${ASSETNAME_PREFIX}${item.name}` === name || item.name === name) && !item.response) {
+                }else if (referenceId && item.referenceId === referenceId && !item.response) { // Need to remove
+                    console.log('updateJobProgress referenceId')
+                    response = serverResponse;
+                    status = serverStatus;
+                } else if (name && (`${ASSETNAME_PREFIX}${item.name}` === name || item.name === name) && !item.response) { // Need to remove
+                    console.log('updateJobProgress name')
                     response = serverResponse;
                     status = serverStatus;
                 }
@@ -749,16 +809,24 @@ function updateAlreadySyncMediaStatus(skippedItems) {
                     let response = jobEle.response;
                     let status = jobEle.status;
 
-                    if (jobEle.referenceId && ele.referenceId && jobEle.referenceId == ele.referenceId) {
+                    if (jobEle.customerKey && ele.customerKey && jobEle.customerKey == ele.customerKey) {
+                        console.log('updateAlreadySyncMediaStatus customerKey')
                         response = serverResponse;
                         status = serverStatus;
-                    } else if (jobEle.name && ele.name && jobEle.name == ele.name) {
+                    } else if (jobEle.referenceId && ele.referenceId && jobEle.referenceId == ele.referenceId) { // Neeed to remove
+                        console.log('updateAlreadySyncMediaStatus referenceId')
                         response = serverResponse;
                         status = serverStatus;
-                    } else if (jobEle.fileName && ele.fileName && jobEle.fileName == ele.fileName) {
+                    } else if (jobEle.name && ele.name && jobEle.name == ele.name) {// Neeed to remove
+                        console.log('updateAlreadySyncMediaStatus name')
                         response = serverResponse;
                         status = serverStatus;
-                    } else if (jobEle.title && ele.name && jobEle.title == ele.name) {
+                    } else if (jobEle.fileName && ele.fileName && jobEle.fileName == ele.fileName) {// Neeed to remove
+                        console.log('updateAlreadySyncMediaStatus fileName')
+                        response = serverResponse;
+                        status = serverStatus;
+                    } else if (jobEle.title && ele.name && jobEle.title == ele.name) {// Neeed to remove
+                        console.log('updateAlreadySyncMediaStatus title')
                         response = serverResponse;
                         status = serverStatus;
                     }
