@@ -277,7 +277,7 @@ async function getMediaSourceFile(node, alreadySyncedContents, folderId) {
 
     if (url) {
 
-       
+       console.log('Check image file node-->', node)
 
         const notInMC = await verifyCustomerKeyInMCFolder(folderId, node.customerKey, alreadySyncedContents);
 
