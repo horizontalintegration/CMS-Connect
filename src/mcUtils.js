@@ -337,6 +337,7 @@ async function verfiyFileNameMCFolder(folderId, fileName, alreadySyncedContents)
  * @param {*} alreadySyncedContents 
  */
 async function verifyCustomerKeyInMCFolder(folderId, customerKey, alreadySyncedContents) {
+    console.log('verifyCustomerKeyInMCFolder-->', customerKey, alreadySyncedContents.items.length);
     if (alreadySyncedContents && alreadySyncedContents.items && alreadySyncedContents.items.length) {
         const item = [...alreadySyncedContents.items].find(ele => ele.customerKey === customerKey);
         return item ? false : true;
@@ -428,7 +429,7 @@ async function checkCustomerKeyInMc(folderId, customerKey) {
             "rightOperand":
             {
                 "property": "customerKey",
-                "simpleOperator": "like",
+                "simpleOperator": "equal",
                 "value": customerKey
             }
         },
@@ -573,6 +574,8 @@ async function moveImageToMC(customerKey, imageNode, folderId, mcAuthResults, cm
         const referenceId = imageNode.referenceId || null;
         const name = imageNode.name;
 
+        const idFromImage = imageExt ?  imageExt.replace('.', '') : '';
+
         try {
             if (imageUrl) {
                 const base64ImageBody = await downloadBase64FromURL(
@@ -583,7 +586,7 @@ async function moveImageToMC(customerKey, imageNode, folderId, mcAuthResults, cm
                 let imageAssetBody = {
                     name: fileName + imageExt,
                     assetType: {
-                        id: getImageAssetTypeId(imageExt.replace('.', '')),
+                        id: getImageAssetTypeId(idFromImage),
                     },
                     fileProperties: {
                         fileName: fileName + imageExt,
