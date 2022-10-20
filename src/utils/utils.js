@@ -234,9 +234,15 @@ function getDocumentAssetTypeId(docExtension) {
 }
 
 async function downloadBase64FromURL(url, access_token, callback) {
-    const res = await axios.get(url, { responseType: 'arraybuffer', headers: { Authorization: 'Bearer ' + access_token } });
-    const raw = Buffer.from(res.data).toString('base64');
-    return raw;
+    // Updated by Harshit Goyal on 20-10-2022
+    // Reason: Previous version of this fuction was depricated 
+    try {
+        const res = await axios.get(url, { responseType: 'arraybuffer', headers: { Authorization: 'Bearer ' + access_token } });
+        const raw = Buffer.from(res.data).toString('base64');
+        return raw;
+    } catch (e) {
+        console.log(`Unable to download the base64 from ${url}:`, error);
+    }
 }
 
 
