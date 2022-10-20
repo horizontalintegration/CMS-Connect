@@ -1,4 +1,4 @@
-const https = require('https');
+var axios = require('axios');
 const nforce = require("nforce");
 var dotenv = require("dotenv").config();
 var path = require('path');
@@ -234,34 +234,9 @@ function getDocumentAssetTypeId(docExtension) {
 }
 
 async function downloadBase64FromURL(url, access_token, callback) {
-    return new Promise((resolve, reject) => {
-        https
-            .get(
-                url,
-                { headers: { Authorization: 'Bearer ' + access_token } },
-                (resp) => {
-                    if (resp) {
-                        resp.setEncoding('base64');
-                        body = "data:" + resp.headers["content-type"] + ";base64,";
-                        resp.on('data', (data) => { body += data });
-
-                        let imageBody = '';
-                        resp.on('data', (data) => {
-                            imageBody += data;
-                        });
-                        resp.on('end', () => {
-                            resolve(imageBody);
-                        });
-                    } else {
-                        reject(`Got error: Base 64 creation`);
-                    }
-
-                }
-            )
-            .on('error', (e) => {
-                reject(`Got error: ${e.message}`);
-            });
-    });
+    const res = await axios.get(url, { responseType: 'arraybuffer', headers: { Authorization: 'Bearer ' + access_token } });
+    const raw = Buffer.from(res.data).toString('base64');
+    return raw;
 }
 
 
